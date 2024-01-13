@@ -1,0 +1,25 @@
+{
+  "name": "workio",
+  "version": "0.0.1",
+  "description": "The Web Worker Framework",
+  "main": "/build/workio.cjs",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/workio-js/workio.git"
+  },
+  "keywords": [
+    "worker"
+  ],
+  "author": "workio-js",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/workio-js/workio/issues"
+  },
+  "homepage": "https://github.com/workio-js/workio#readme"
+}
