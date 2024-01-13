@@ -1,5 +1,5 @@
-./book
-./playground
-./resources
-./src
-./test
+*/
+!build
+!resources
+!LICENSE
+!README.md
