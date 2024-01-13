@@ -2,7 +2,7 @@
   "name": "workio",
   "version": "0.0.1",
   "description": "The Web Worker Framework",
-  "main": "/build/workio.cjs",
+  "main": "/src/Workio.js",
   "directories": {
     "test": "test"
   },
