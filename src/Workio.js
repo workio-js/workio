@@ -1,5 +1,6 @@
 import { ScriptURL, UniversalWorker } from "./util/lib.js";
 import { AM_I_NODE } from "./constants/lib.js";
+import { WorkioWorker } from "./worker.js"
 
 export class Workio {
 
@@ -14,6 +15,17 @@ export class Workio {
 		if(!workerFn instanceof Function) {
 			throw new TypeError("workerFn is not a type of function")
 		};
+		switch(config.type) {
+			case Worker:
+			case undefined:
+				return;
+
+			case Function:
+				return 
+			
+			case Object:
+				return
+		}
 		const compiledScriptURL = new ScriptURL(`
 			(async () => {
 				
@@ -62,6 +74,13 @@ export class Workio {
 	 */
 
 	static configure(options) {
+
+	}
+
+	/**
+	 * @param { Object } functionList 
+	 */
+	static public(functionList, options) {
 
 	}
 
