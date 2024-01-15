@@ -1,6 +1,8 @@
-import * as Util from "./util/lib.js";
-import { AM_I_NODE } from "./constants/lib.js";
-import { WorkioWorker } from "./worker.js"
+import { AM_I_NODE } from "./AM_I_NODE.js";
+import { TaskPool } from "./TaskPool.js";
+import { WorkioInstance } from "./WorkioInstance.js";
+import { WorkioFunction } from "./WorkioFunction.js";
+import { WorkioObject } from "./WorkioObject.js";
 
 export class Workio {
 
@@ -9,48 +11,31 @@ export class Workio {
 	 * 
 	 * @param { Object } [config]
 	 * @param { String } [config.shared]
+	 * @param { Object } [config.as]
 	 */
 
 	constructor(workerFn, config) {
 		if(!workerFn instanceof Function) {
 			throw new TypeError("workerFn is not a type of function")
 		};
-		switch(config.type) {
-			case Worker:
-			case undefined:
-				return;
-
-			case Function:
-				return 
-			
-			case Object:
-				return
-		}
-
-		return class {
-			constructor(...workerConstArgs) {
-				this.workerInstance = new Worker(Util.createScriptURL(`
-					(async () => {
-						
-						self.${AM_I_NODE? "on" : "addEventListener"}("message", event => {
-					
-						}, { passive: true });
-					
-						const publicFunctionInterface = await (${workerFn.toString()})()
-					
-						self.postMessage(JSON.stringify({
-					
-						}))
-					})()
-				`));
-
-				workerInstance.postMessage({
-					constructorArgs: workerConstArgs
-				})
-
-				workerInstance[AM_I_NODE? "on" : "addEventListener"]("message", event => {
-
-				}, { passive: true });
+		if(config) {
+			switch(config.as) {
+				case Worker:
+				case undefined:
+					return class extends WorkioInstance {
+						/**
+						 * @param  { ...any } constructorArgs 
+						 */
+						constructor(...constructorArgs) {
+							super(workerFn, config, constructorArgs)
+						}
+					};
+	
+				case Function:
+					return new WorkioFunction(workerFn, config);
+				
+				case Object:
+					return new WorkioObject(workerFn, config);
 			}
 		}
 	}

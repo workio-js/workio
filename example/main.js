@@ -1,3 +1,5 @@
 import { Workio } from "../src/Workio.js"
 
-await new Workio((name) => `Hello, ${name} from Workio!`, { type: Function })()
+const a = new Workio((name) => {
+	return `Hello, ${name} from Workio!`
+}, { as: Function })()
