@@ -1,2 +1,2 @@
-export { ScriptURL } from "./ScriptURL.js"
+export { createScriptURL } from "./createScriptURL.js"
 export { UniversalWorker } from "./UniversalWorker.js"

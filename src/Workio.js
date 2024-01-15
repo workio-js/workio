@@ -1,4 +1,4 @@
-import { ScriptURL, UniversalWorker } from "./util/lib.js";
+import * as Util from "./util/lib.js";
 import { AM_I_NODE } from "./constants/lib.js";
 import { WorkioWorker } from "./worker.js"
 
@@ -26,34 +26,29 @@ export class Workio {
 			case Object:
 				return
 		}
-		const compiledScriptURL = new ScriptURL(`
-			(async () => {
-				
-				self.${AM_I_NODE? "on" : "addEventListener"}("message", event => {
-			
-				}, { passive: true });
-			
-				const publicFunctionInterface = await (\0function\0)()
-			
-				self.postMessage(JSON.stringify({
-			
-				}))
-			})()
-		`.replace(/\t|\n/g, "").replace("\0function\0", "\n\n\n" + scriptStr.toString()))
 
 		return class {
 			constructor(...workerConstArgs) {
-				const workerInstance = new UniversalWorker(compiledScriptURL, {
-					message(event) {
-
-					}
-				});
+				this.workerInstance = new Worker(Util.createScriptURL(`
+					(async () => {
+						
+						self.${AM_I_NODE? "on" : "addEventListener"}("message", event => {
+					
+						}, { passive: true });
+					
+						const publicFunctionInterface = await (${workerFn.toString()})()
+					
+						self.postMessage(JSON.stringify({
+					
+						}))
+					})()
+				`));
 
 				workerInstance.postMessage({
 					constructorArgs: workerConstArgs
 				})
 
-				workerInstance.addEventListener("message", event => {
+				workerInstance[AM_I_NODE? "on" : "addEventListener"]("message", event => {
 
 				}, { passive: true });
 			}
@@ -74,13 +69,6 @@ export class Workio {
 	 */
 
 	static configure(options) {
-
-	}
-
-	/**
-	 * @param { Object } functionList 
-	 */
-	static public(functionList, options) {
 
 	}
 
