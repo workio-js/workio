@@ -11,7 +11,7 @@ export class Workio {
 	 * 
 	 * @param { Object } [config]
 	 * @param { String } [config.shared]
-	 * @param { Object } [config.as]
+	 * @param { String } [config.as]
 	 */
 
 	constructor(workerFn, config) {
@@ -20,7 +20,7 @@ export class Workio {
 		};
 		if(config) {
 			switch(config.as) {
-				case Worker:
+				case "worker":
 				case undefined:
 					return class extends WorkioInstance {
 						/**
@@ -31,10 +31,10 @@ export class Workio {
 						}
 					};
 	
-				case Function:
+				case "function":
 					return new WorkioFunction(workerFn, config);
 				
-				case Object:
+				case "object":
 					return new WorkioObject(workerFn, config);
 			}
 		}

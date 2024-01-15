@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "The Web Worker Framework",
   "main": "/build/workio.cjs",
+  "type": "module",
   "directories": {
     "test": "test"
   },

@@ -1,15 +1,17 @@
-import { AM_I_NODE } from "./AM_I_NODE";
-import { getScriptURL } from "./getScriptURL";
+import { AM_I_NODE } from "./AM_I_NODE.js";
+import { getScriptURL } from "./getScriptURL.js";
+import { TaskPool } from "./TaskPool.js";
+// import { Worker } from "node:worker_threads"
 
 export class WorkioInstance {
 
 	constructor(workerFn, config, constructorArgs) {
 
-		const workerInstance = new Worker(getScriptURL(`
+		const workerInstance = new Worker(((scriptString) => getScriptURL(scriptString))(`
 			(async () => {
 
 				// init
-
+				
 				let sudo = crypto.randomUUID();
 
 				self.postMessage({ sudo })
@@ -35,23 +37,25 @@ export class WorkioInstance {
 
 				self.postMessage({ prepareMethod: Object.keys(publicFunctionInterface), sudo })
 		
-				self.${AM_I_NODE? "on" : "addEventListener"}("message", ({ data }) => {
+				self.addEventListener("message", async ({ data }) => {
 					if("task" in data) {
-						self.postMessage({ returnValue: publicFunctionInterface[data.task](...data.args) })
+						self.postMessage({ returnValue: await publicFunctionInterface[data.task](...data.args), taskId: data.taskId, sudo })
 					}
 				}, { passive: true });
 
 			})()
 		`), { type: "module" });
 
-		const taskIdPool = {}; // キーは整数値
-
-		workerInstance.postMessage({ constructorArgs });
+		const personalTaskPool = new TaskPool();
+		const proxiedMethodInterface = {};
 
 		let sudo = null;
+		let hasPMI = false;
+		
+		workerInstance.postMessage({ constructorArgs });
 
-		workerInstance[AM_I_NODE? "on" : "addEventListener"]("message", ({ data }) => {
-			if("sudo" in data) {
+		workerInstance.addEventListener("message", ({ data }) => {
+			if(data.sudo) {
 				if(sudo === null) {
 					sudo = data.sudo;
 				}
@@ -60,18 +64,29 @@ export class WorkioInstance {
 						workerInstance.terminate();
 						return;
 					}
-					if("prepareMethod" in data) {
+					if(data.prepareMethod) {
 						data.prepareMethod.forEach(index => {
-							this[index] = function() {
+							this[index] = async function() {
 								return new Promise((resolve, reject) => {
-									workerInstance.postMessage({ task: index, args: arguments })
+									const task = personalTaskPool.newTask({ resolve });
+									workerInstance.postMessage({ task: index, args: [...arguments], taskId: task.id })
 								})
 							}
 						})
+					}
+					if(data.returnValue) {
+						personalTaskPool.setResponse(data) // { taskId, returnValue }
 					}
 				}
 			}
 		}, { passive: true });
 
+		// return new Proxy(this, {
+		// 	get(target, prop, receiver) {
+		// 		if(prop in proxiedMethodInterface) {
+		// 			return proxiedMethodInterface[prop]
+		// 		}
+		// 	}
+		// })
 	}
 }

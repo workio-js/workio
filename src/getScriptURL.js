@@ -6,7 +6,7 @@ const scriptURLCache = new Map()
 
 export function getScriptURL(scriptStr) {
 	if(!scriptURLCache.has(scriptStr)) {
-		scriptURLCache.set(scriptStr, URL.createObjectURL(new Blob([scriptStr], { type: "application/javascript" })))
+		scriptURLCache.set(scriptStr, URL.createObjectURL(new File([scriptStr], "workioscript.js", { type: "application/javascript" })))
 	}
 	return scriptURLCache.get(scriptStr);
 };
