@@ -9,7 +9,6 @@ export class WorkioInstance {
 			(async () => {
 					
 				let sudo = crypto.randomUUID();
-				let messageBuffer = [];
 			
 				self.postMessage({ sudo });
 			
@@ -17,7 +16,7 @@ export class WorkioInstance {
 					self.postMessage({ close: true, sudo })
 				};
 			
-				let publicFunctionInterface = {};
+				const publicFunctionInterface = {};
 			
 				for(const index in publicFunctionInterface) {
 					if(!(publicFunctionInterface[index] instanceof Function)) {
@@ -33,21 +32,20 @@ export class WorkioInstance {
 							self.postMessage({ methodNotFound: true, taskId: data.taskId, sudo })
 						}
 					}
-					if(data.constructorArgs && data.functionBody) {
+					if(data.constructorArgs) {
 						let sudo = undefined;
-						
-						Object.assign(publicFunctionInterface, await (new Function(data.functionBody)(data.constructorArgs)))
+						Object.assign(publicFunctionInterface, await (${workerFn.toString()})(data.constructorArgs))
 					}
 				}, { passive: true });
 			
 			})()
 		`), { type: "module" });
 
-		const taskHQ = new TaskPool();
+		const personalTaskPool = new TaskPool();
 
 		let sudo = null;
 		
-		workerInstance.postMessage({ functionBody: workerFn.toString(), constructorArgs });
+		workerInstance.postMessage({ constructorArgs });
 
 		workerInstance.addEventListener("message", ({ data }) => {
 			if(data.sudo) {
@@ -61,10 +59,10 @@ export class WorkioInstance {
 							return;
 						}
 						if(data.returnValue) {
-							taskHQ.setResponse(data) // { taskId, returnValue }
+							personalTaskPool.setResponse(data) // { taskId, returnValue }
 						}
 						if(data.methodNotFound) {
-							taskHQ.rejectResponse(data)
+							personalTaskPool.rejectResponse(data)
 						}
 						break;
 				}
@@ -75,7 +73,7 @@ export class WorkioInstance {
 			get(target, prop, receiver) {
 				return function() {
 					return new Promise((resolve, reject) => {
-						const taskId = taskHQ.newTask({ resolve, reject });
+						const taskId = personalTaskPool.newTask({ resolve, reject });
 						workerInstance.postMessage({ task: prop, args: [...arguments], taskId })
 					})
 				}

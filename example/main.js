@@ -1,4 +1,4 @@
-import { Workio } from "../src/Workio.js"
+import { Workio } from "../build/WorkioBuild.js"
 
 const ExampleWorker = new Workio(() => {
 
