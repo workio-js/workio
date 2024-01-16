@@ -11,4 +11,5 @@ let mainBuiltText = (await esbuild.build({
 	minify: true,
 })).outputFiles[0].text.replace(/\t|\n/g, "")
 
-await Deno.writeTextFile("./docs/mod.js", mainBuiltText)
+await Deno.writeTextFile("./release/@0.0.1/mod.js", mainBuiltText)
+await Deno.writeTextFile("./release/mod.js", mainBuiltText)
