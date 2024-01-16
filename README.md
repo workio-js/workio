@@ -1,7 +1,6 @@
 # ```Workio```
 ### The Web Worker Framework
 
-## build
-```bash
-deno run
+```javascript
+import { Workio } from "https://esm.sh/workio"
 ```
