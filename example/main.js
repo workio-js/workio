@@ -2,19 +2,22 @@ import { Workio } from "../src/Workio.js"
 
 const ExampleWorker = new Workio(() => {
 
-	function echo(name) {
-		return "hello, " + name
-	};
+	function calc() {
+		let buffer = 0;
+		for(let i = 0; i < 1e9; i++) {
+			buffer = i;
+		};
+		return buffer;
+	}
 
-	return { echo, close }
+	return { calc, close }
 
-}, { as: "worker" })
-
-console.log(ExampleWorker)
+});
 
 const instance = new ExampleWorker();
 
 (async () => {
-	console.log(await instance.echo("wow"))
-	await instance.close()
+	console.log(await instance.calc());
+	
+	await instance.close();
 })()

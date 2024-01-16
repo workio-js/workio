@@ -15,7 +15,7 @@ export class TaskPool {
 		}
 		this.pool[currentId] = { resolve, reject }
 
-		return { id: currentId }
+		return currentId
 	}
 	setResponse({ taskId, returnValue }) {
 		this.pool[taskId].resolve(returnValue)

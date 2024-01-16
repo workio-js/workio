@@ -5,36 +5,27 @@ import { TaskPool } from "./TaskPool.js";
 
 export class WorkioInstance {
 
-	constructor(workerFn, config, constructorArgs) {
+	constructor({ workerFn, config, constructorArgs }) {
 
-		const workerInstance = new Worker(((scriptString) => getScriptURL(scriptString))(`
+		const workerInstance = new Worker(getScriptURL(`
 			(async () => {
-
-				// init
 				
 				let sudo = crypto.randomUUID();
 
-				self.postMessage({ sudo })
+				self.postMessage({ sudo });
 
 				self.close = function() {
 					self.postMessage({ close: true, sudo })
-				}
+				};
 
-				let publicFunctionInterface = {};
-
-				// sandboxed process
-				
-				{
-					let sudo = undefined;
-					publicFunctionInterface = await (${workerFn.toString()})();
-				}
+				const publicFunctionInterface = {};
 
 				for(const index in publicFunctionInterface) {
 					if(!(publicFunctionInterface[index] instanceof Function)) {
 						delete publicFunctionInterface[index]
 					}
-				}
-		
+				};
+
 				self.addEventListener("message", async ({ data }) => {
 					if("task" in data) {
 						if(data.task in publicFunctionInterface) {
@@ -43,10 +34,14 @@ export class WorkioInstance {
 							self.postMessage({ methodNotFound: true, taskId: data.taskId, sudo })
 						}
 					}
+					if(data.constructorArgs) {
+						let sudo = undefined;
+						Object.assign(publicFunctionInterface, await (\0workio-fn\0)(data.constructorArgs))
+					}
 				}, { passive: true });
 
 			})()
-		`), { type: "module" });
+		`.replace(/\t|\n/g, "").replace("\0workio-fn\0", "\n\n\n" + workerFn.toString() + "\n\n\n")), { type: "module" });
 
 		const personalTaskPool = new TaskPool();
 
@@ -90,8 +85,8 @@ export class WorkioInstance {
 			get(target, prop, receiver) {
 				return function() {
 					return new Promise((resolve, reject) => {
-						const task = personalTaskPool.newTask({ resolve, reject });
-						workerInstance.postMessage({ task: prop, args: [...arguments], taskId: task.id })
+						const taskId = personalTaskPool.newTask({ resolve, reject });
+						workerInstance.postMessage({ task: prop, args: [...arguments], taskId })
 					})
 				}
 			}

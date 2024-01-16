@@ -18,34 +18,37 @@ export class Workio {
 		if(!workerFn instanceof Function) {
 			throw new TypeError("workerFn is not a type of function")
 		};
+
+		const constructorConfig = {}
+
 		if(config) {
-			switch(config.as) {
-				case "worker":
-				case undefined:
-					return class extends WorkioInstance {
-						/**
-						 * @param  { ...any } constructorArgs 
-						 */
-						constructor(...constructorArgs) {
-							super(workerFn, config, constructorArgs)
-						}
-					};
-	
-				case "function":
-					return new WorkioFunction(workerFn, config);
-				
-				case "object":
-					return new WorkioObject(workerFn, config);
+			if(config.as) {
+				constructorConfig.type = config.as
+			} else {
+				constructorConfig.type = "worker"
 			}
+		} else {
+			constructorConfig.type = "worker"
 		}
-	}
 
-	static reset(WorkioWorker) {
+		switch(constructorConfig.type) {
+			case "worker":
+				return class extends WorkioInstance {
+					/**
+					 * @param  {...any} constructorArgs 
+					 */
+					constructor(...constructorArgs) {
+						super({ workerFn, config, constructorArgs })
+					}
 
-	}
+				}
 
-	static purge(WorkioWorker) {
+			case "object":
+				return new WorkioObject(workerFn, config)
 
+			case "function":
+				return new WorkioFunction(workerFn, config)
+		}
 	}
 
 	/**
@@ -55,6 +58,20 @@ export class Workio {
 
 	static configure(options) {
 
+	}
+
+	static version() {
+		open(URL.createObjectURL(new File([`
+			<!DOCTYPE html>
+			<html>
+				<head>
+					<title>Workio 1.0.0</title>
+				</head>
+				<body>
+					<label>Workio.js</label>
+				</body>
+			</html>
+		`.replace(/\t|\n/g, "")], "debug.html", { type: "text/html" })))
 	}
 
 };
