@@ -1,5 +1,0 @@
-RewriteEngine On
-
-RewriteCond %{HTTP_USER_AGENT} reqwest [NC]
-
-RewriteRule ^(.*)$ https://cdn.jsdelivr.net/gh/workio-js/workio/build/workio.min.js [R=301,L]
