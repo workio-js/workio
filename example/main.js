@@ -1,6 +1,8 @@
-import { Workio } from "../build/WorkioBuild.js"
+import { Workio } from "../build/workio.min.js"
 
 const ExampleWorker = new Workio(() => {
+
+	self.onmessagestream()
 
 	function calc() {
 		let buffer = 0;
@@ -16,6 +18,7 @@ const ExampleWorker = new Workio(() => {
 
 const instance = new ExampleWorker();
 
+console.log("calc start");
 (async () => {
 	console.log(await instance.calc());
 	
