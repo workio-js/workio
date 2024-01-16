@@ -1,7 +1,5 @@
-import { AM_I_NODE } from "./AM_I_NODE.js";
 import { getScriptURL } from "./getScriptURL.js";
 import { TaskPool } from "./TaskPool.js";
-// import { Worker } from "node:worker_threads"
 
 export class WorkioInstance {
 
@@ -9,23 +7,24 @@ export class WorkioInstance {
 
 		const workerInstance = new Worker(getScriptURL(`
 			(async () => {
-				
+					
 				let sudo = crypto.randomUUID();
-
+				let messageBuffer = [];
+			
 				self.postMessage({ sudo });
-
+			
 				self.close = function() {
 					self.postMessage({ close: true, sudo })
 				};
-
-				const publicFunctionInterface = {};
-
+			
+				let publicFunctionInterface = {};
+			
 				for(const index in publicFunctionInterface) {
 					if(!(publicFunctionInterface[index] instanceof Function)) {
 						delete publicFunctionInterface[index]
 					}
 				};
-
+			
 				self.addEventListener("message", async ({ data }) => {
 					if("task" in data) {
 						if(data.task in publicFunctionInterface) {
@@ -34,20 +33,21 @@ export class WorkioInstance {
 							self.postMessage({ methodNotFound: true, taskId: data.taskId, sudo })
 						}
 					}
-					if(data.constructorArgs) {
+					if(data.constructorArgs && data.functionBody) {
 						let sudo = undefined;
-						Object.assign(publicFunctionInterface, await (\0workio-fn\0)(data.constructorArgs))
+						
+						Object.assign(publicFunctionInterface, await (new Function(data.functionBody)(data.constructorArgs)))
 					}
 				}, { passive: true });
-
+			
 			})()
-		`.replace(/\t|\n/g, "").replace("\0workio-fn\0", "\n\n\n" + workerFn.toString() + "\n\n\n")), { type: "module" });
+		`), { type: "module" });
 
-		const personalTaskPool = new TaskPool();
+		const taskHQ = new TaskPool();
 
 		let sudo = null;
 		
-		workerInstance.postMessage({ constructorArgs });
+		workerInstance.postMessage({ functionBody: workerFn.toString(), constructorArgs });
 
 		workerInstance.addEventListener("message", ({ data }) => {
 			if(data.sudo) {
@@ -60,21 +60,11 @@ export class WorkioInstance {
 							workerInstance.terminate();
 							return;
 						}
-						// if(data.prepareMethod) {
-						// 	data.prepareMethod.forEach(index => {
-						// 		this[index] = async function() {
-						// 			return new Promise((resolve, reject) => {
-						// 				const task = personalTaskPool.newTask({ resolve });
-						// 				workerInstance.postMessage({ task: index, args: [...arguments], taskId: task.id })
-						// 			})
-						// 		}
-						// 	})
-						// }
 						if(data.returnValue) {
-							personalTaskPool.setResponse(data) // { taskId, returnValue }
+							taskHQ.setResponse(data) // { taskId, returnValue }
 						}
 						if(data.methodNotFound) {
-							personalTaskPool.rejectResponse(data)
+							taskHQ.rejectResponse(data)
 						}
 						break;
 				}
@@ -85,7 +75,7 @@ export class WorkioInstance {
 			get(target, prop, receiver) {
 				return function() {
 					return new Promise((resolve, reject) => {
-						const taskId = personalTaskPool.newTask({ resolve, reject });
+						const taskId = taskHQ.newTask({ resolve, reject });
 						workerInstance.postMessage({ task: prop, args: [...arguments], taskId })
 					})
 				}

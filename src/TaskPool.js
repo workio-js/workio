@@ -3,6 +3,7 @@ export class TaskPool {
 		this.pool = {};
 		this.nextId = 0;
 		this.vacantId = [];
+		this.reservedResponse = [];
 	}
 	newTask({ resolve, reject }) {
 		let currentId = null
@@ -22,7 +23,7 @@ export class TaskPool {
 		this.taskGC({ taskId })
 	}
 	rejectResponse({ taskId }) {
-		this.pool[taskId].reject("a")
+		this.pool[taskId].reject("Method not found")
 		this.taskGC({ taskId })
 	}
 	taskGC({ taskId }) {

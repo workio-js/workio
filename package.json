@@ -8,8 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npx standard && node ./test/standard.js",
-    "example": "node ./example/example.js"
+    "build": "node ./script/build"
   },
   "repository": {
     "type": "git",
@@ -23,5 +22,9 @@
   "bugs": {
     "url": "https://github.com/workio-js/workio/issues"
   },
-  "homepage": "https://github.com/workio-js/workio#readme"
+  "homepage": "https://github.com/workio-js/workio#readme",
+  "devDependencies": {
+    "@rollup/plugin-multi-entry": "^6.0.1",
+    "@rollup/plugin-terser": "^0.4.4"
+  }
 }

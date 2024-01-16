@@ -1,5 +1,3 @@
-import { AM_I_NODE } from "./AM_I_NODE.js";
-import { TaskPool } from "./TaskPool.js";
 import { WorkioInstance } from "./WorkioInstance.js";
 import { WorkioFunction } from "./WorkioFunction.js";
 import { WorkioObject } from "./WorkioObject.js";
@@ -15,7 +13,7 @@ export class Workio {
 	 */
 
 	constructor(workerFn, config) {
-		if(!workerFn instanceof Function) {
+		if(!(workerFn instanceof Function)) {
 			throw new TypeError("workerFn is not a type of function")
 		};
 
@@ -58,20 +56,6 @@ export class Workio {
 
 	static configure(options) {
 
-	}
-
-	static version() {
-		open(URL.createObjectURL(new File([`
-			<!DOCTYPE html>
-			<html>
-				<head>
-					<title>Workio 1.0.0</title>
-				</head>
-				<body>
-					<label>Workio.js</label>
-				</body>
-			</html>
-		`.replace(/\t|\n/g, "")], "debug.html", { type: "text/html" })))
 	}
 
 };
