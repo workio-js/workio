@@ -4,7 +4,7 @@ export class TaskPool {
 		this.nextId = 0;
 		this.vacantId = [];
 	}
-	newTask({ resolve }) {
+	newTask({ resolve, reject }) {
 		let currentId = null
 		if(this.vacantId.length) {
 			currentId = this.vacantId[0]
@@ -13,12 +13,19 @@ export class TaskPool {
 			currentId = this.nextId
 			this.nextId++;
 		}
-		this.pool[currentId] = resolve
+		this.pool[currentId] = { resolve, reject }
 
 		return { id: currentId }
 	}
 	setResponse({ taskId, returnValue }) {
-		this.pool[taskId](returnValue)
+		this.pool[taskId].resolve(returnValue)
+		this.taskGC({ taskId })
+	}
+	rejectResponse({ taskId }) {
+		this.pool[taskId].reject("a")
+		this.taskGC({ taskId })
+	}
+	taskGC({ taskId }) {
 		this.pool[taskId] = undefined;
 		if(taskId + 1 === this.nextId) {
 			this.nextId--;

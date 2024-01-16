@@ -6,7 +6,7 @@ const ExampleWorker = new Workio(() => {
 		return "hello, " + name
 	};
 
-	return { echo }
+	return { echo, close }
 
 }, { as: "worker" })
 
@@ -14,6 +14,7 @@ console.log(ExampleWorker)
 
 const instance = new ExampleWorker();
 
-setTimeout(async () => {
+(async () => {
 	console.log(await instance.echo("wow"))
-}, 1000)
+	await instance.close()
+})()
