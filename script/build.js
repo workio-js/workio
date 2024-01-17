@@ -1,15 +1,17 @@
-import * as esbuild from 'https://deno.land/x/esbuild@v0.11.17/mod.js';
-import { denoPlugin } from "https://deno.land/x/esbuild_deno_loader@0.6.0/mod.ts";
+const
+	esbuild = await import('https://deno.land/x/esbuild@v0.11.17/mod.js'),
+	{ denoPlugin } = await import("https://deno.land/x/esbuild_deno_loader@0.6.0/mod.ts")
 
-let mainBuiltText = (await esbuild.build({
+const mainBuiltText = (await esbuild.build({
 	plugins: [denoPlugin()],
 	// 対象ファイル名
 	entryPoints: ["./src/Workio.js"],
 	write: false,
 	bundle: true,
-	format: "esm",
 	minify: true,
+	format: "esm",
 })).outputFiles[0].text.replace(/\t|\n/g, "")
 
-await Deno.writeTextFile("./release/@0.0.1/mod.js", mainBuiltText)
-await Deno.writeTextFile("./release/mod.js", mainBuiltText)
+esbuild.stop()
+
+await Deno.writeTextFile("./build/mod.js", mainBuiltText)
