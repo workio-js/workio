@@ -41,7 +41,7 @@ export class WorkioInstance {
 			})()
 		`), { type: "module" });
 
-		const { newTask, setResponse, rejectResponse } = new TaskPool();
+		const personalTaskPool = new TaskPool();
 
 		let sudo = null;
 		
@@ -59,10 +59,10 @@ export class WorkioInstance {
 							return;
 						}
 						if(data.returnValue) {
-							setResponse(data) // { taskId, returnValue }
+							personalTaskPool.setResponse(data) // { taskId, returnValue }
 						}
 						if(data.methodNotFound) {
-							rejectResponse(data)
+							personalTaskPool.rejectResponse(data)
 						}
 						break;
 				}
@@ -73,7 +73,7 @@ export class WorkioInstance {
 			get(target, prop, receiver) {
 				return function() {
 					return new Promise((resolve, reject) => {
-						const taskId = newTask({ resolve, reject });
+						const taskId = personalTaskPool.newTask({ resolve, reject });
 						workerInstance.postMessage({ task: prop, args: [...arguments], taskId })
 					})
 				}

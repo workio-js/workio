@@ -1,4 +1,4 @@
-import { Workio } from "../release/mod.js"
+import { Workio } from "../build/mod.js"
 
 const ExampleWorker = new Workio(() => {
 
