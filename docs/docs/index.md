@@ -13,7 +13,7 @@ hero:
       text: Why Workio?
       link: https://github.com/workio-js/workio
     - theme: alt
-      text: View Docs
+      text: View GitHub
       link: https://github.com/workio-js/workio
 
 features:

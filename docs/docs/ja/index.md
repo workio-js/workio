@@ -13,7 +13,7 @@ hero:
       text: Workio を使う理由
       link: https://github.com/workio-js/workio
     - theme: alt
-      text: ドキュメントを見る
+      text: GitHub を見る
       link: https://github.com/workio-js/workio
 
 features:
