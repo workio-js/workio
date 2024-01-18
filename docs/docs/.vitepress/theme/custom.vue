@@ -8,6 +8,8 @@ import DefaultTheme from 'vitepress/theme';
       ><iframe
         id="sb-preview"
         src="https://stackblitz.com/edit/js-y2bmps?embed=1&file=index.js&hideExplorer=1&hideNavigation=1&theme=dark&view=editor"
+        style="visibility:hidden;"
+        onload="this.style.visibility = 'visible';"
       ></iframe
     ></template>
   </DefaultTheme.Layout>
