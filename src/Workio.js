@@ -65,5 +65,3 @@ if(runtimeKey !== "other") {
 }
 
 export { Workio }
-
-const EdgeWorker = new Workio("https://???.workers.dev", { as: "function" })
