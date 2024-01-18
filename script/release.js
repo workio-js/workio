@@ -7,4 +7,5 @@ if(await exists(`./build/@${releaseVersion}`)) {
 } else {
 	Deno.mkdir(`./release/@${releaseVersion}`);
 	copy("./build/mod.js", `./release/@${releaseVersion}/mod.js`)
+	copy("./docs/docs/.vitepress/dist", `./release/docs`)
 }

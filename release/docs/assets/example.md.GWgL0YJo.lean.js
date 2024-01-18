@@ -1,0 +1,1 @@
+import{_ as e,c as t,o as a,V as r}from"./chunks/framework.7l-q_CRe.js";const m=JSON.parse('{"title":"はじめに","description":"","frontmatter":{},"headers":[],"relativePath":"example.md","filePath":"example.md"}'),o={name:"example.md"},n=r("",7),i=[n];function s(d,l,h,c,_,p){return a(),t("div",null,i)}const b=e(o,[["render",s]]);export{m as __pageData,b as default};
