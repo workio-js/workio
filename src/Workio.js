@@ -1,8 +1,11 @@
-import { WorkioInstance } from "./WorkioInstance.js";
-import { WorkioFunction } from "./WorkioFunction.js";
-import { WorkioObject } from "./WorkioObject.js";
+import { WorkioInstance } from "./Instance.js";
+import { WorkioFunction } from "./Function.js";
+import { WorkioServer } from "./Server.js";
 
-export class Workio {
+import { runtimeKey } from "./utils/getRuntimeKey.js";
+import { constConfig } from "./utils/getConstConfig.js";
+
+class Workio {
 
 	/**
 	 * @param { Function } workerFn Describes function which executed on worker thread.
@@ -17,17 +20,7 @@ export class Workio {
 			throw new TypeError("workerFn is not a type of function")
 		};
 
-		const constructorConfig = {}
-
-		if(config) {
-			if(config.as) {
-				constructorConfig.type = config.as
-			} else {
-				constructorConfig.type = "worker"
-			}
-		} else {
-			constructorConfig.type = "worker"
-		}
+		const constructorConfig = constConfig(config)
 
 		switch(constructorConfig.type) {
 			case "worker":
@@ -36,16 +29,12 @@ export class Workio {
 					 * @param  {...any} constructorArgs 
 					 */
 					constructor(...constructorArgs) {
-						super({ workerFn, config, constructorArgs })
+						super({ workerFn, constructorConfig, constructorArgs })
 					}
-
 				}
 
-			case "object":
-				return new WorkioObject(workerFn, config)
-
 			case "function":
-				return new WorkioFunction(workerFn, config)
+				return new WorkioFunction(workerFn, constructorConfig)
 		}
 	}
 
@@ -58,4 +47,23 @@ export class Workio {
 
 	}
 
+	static import(url) {
+
+	}
+
 };
+
+if(runtimeKey !== "other") {
+	Object.assign(Workio, {
+		/**
+		 * @param { Object } targetFn 
+		 */
+		serve(targetFn) {
+			new WorkioServer(targetFn)
+		}
+	})
+}
+
+export { Workio }
+
+const EdgeWorker = new Workio("https://???.workers.dev", { as: "function" })

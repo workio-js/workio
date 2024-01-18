@@ -1,4 +1,4 @@
-import { getScriptURL } from "./getScriptURL.js";
+import { getScriptURL } from "./utils/getScriptURL.js";
 import { TaskPool } from "./TaskPool.js";
 
 export class WorkioInstance {

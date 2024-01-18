@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;800&display=swap');
+
+:root {
+  --vp-home-hero-name-color: #101214;
+  --vp-c-brand-1: #1972ff;
+  --vp-c-brand-2: var(--vp-c-brand-1);
+  --vp-c-brand-3: var(--vp-c-brand-1);
+  --vp-font-family-base: 'manrope', sans-serif;
+
+  --vp-c-bg: #f2f3ff;
+  --vp-c-bg-alt: var(--vp-c-bg);
+  --vp-c-bg-elv: var(--vp-c-bg);
+  --vp-c-bg-soft: var(--vp-c-bg);
+
+  --vp-c-gray-1: var(--vp-c-bg);
+  --vp-c-gray-2: var(--vp-c-bg);
+  --vp-c-gray-3: var(--vp-c-bg);
+}
+
+.dark {
+  --vp-home-hero-name-color: #f2f3ff;
+  --vp-c-bg: #101214;
+  --vp-c-bg-alt: var(--vp-c-bg);
+  --vp-c-bg-elv: #131518;
+  --vp-c-bg-soft: var(--vp-c-bg);
+}
+
+div.main > h1.name,
+div.main > p.text {
+  width: 100%;
+}
+
+div.main > p.text {
+  font-weight: 500;
+  color: var(--vp-home-hero-name-color);
+}
+
+div.actions > div.action > a:not(.brand) {
+  background-color: #2b3037;
+  transition: all 160ms;
+}
+
+div.actions > div.action > a:not(.brand):hover {
+  background-color: var(--vp-home-hero-name-color);
+  color: var(--vp-c-bg);
+  transition: all 160ms;
+}
+
+div.actions > div.action > a:not(.brand):active {
+  background-color: var(--vp-home-hero-name-color);
+  transition: all 160ms;
+}
+
+.VPImage.image-src {
+  margin-top: 40px;
+  max-width: 800px;
+}
+
+@media screen and (max-width: 960px) {
+  .VPHero.has-image .image {
+    display: none;
+  }
+}
+
+div.VPNavScreenAppearance.appearance,
+div.VPNavBarAppearance.appearance {
+  display: none;
+}
+
+#sb-preview {
+  background-color: var(--vp-c-bg);
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 12px;
+  outline: 1px solid transparent;
+  transition: outline 160ms;
+  z-index: 1;
+}
+
+#sb-preview:hover,
+#sb-preview:active,
+#sb-preview:focus {
+  outline: 1px solid var(--vp-c-brand-1);
+  transition: outline 160ms;
+}
+
+.VPLink.link.no-icon.VPFeature:hover {
+  background-color: var(--vp-c-bg-elv);
+}
+
+.VPLink.link.no-icon.VPFeature:hover > article > a {
+  color: var(--vp-home-hero-name-color);
+}
+.VPHero.has-image.VPHomeHero > .container > .image > .image-container {
+  transform: translate(0px, 0px);
+}
