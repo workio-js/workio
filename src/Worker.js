@@ -2,7 +2,7 @@ const { getScriptURL } = await import("./utils/getScriptURL.js");
 const { TaskPool } = await import("./core/TaskPool.js");
 const { runtimeKey } = await import("./utils/getRuntimeKey.js");
 
-export class WorkioInstance {
+export class WorkioWorker {
 
 	constructor({ workerFn, constructorConfig, constructorArgs }) {
 

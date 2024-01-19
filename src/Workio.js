@@ -1,4 +1,4 @@
-const { WorkioInstance } = await import("./Instance.js");
+const { WorkioWorker } = await import("./Worker.js");
 const { WorkioFunction } = await import("./Function.js");
 const { WorkioServer } = await import("./Server.js");
 
@@ -30,7 +30,7 @@ class Workio {
 
 		switch(constructorConfig.as) {
 			case "worker":
-				return class extends WorkioInstance {
+				return class extends WorkioWorker {
 					/**
 					 * @param  {...any} constructorArgs 
 					 */
