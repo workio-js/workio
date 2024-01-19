@@ -1,40 +1,54 @@
 import { getScriptURL } from "./utils/getScriptURL.js";
-import { TaskPool } from "./TaskPool.js";
+import { TaskPool } from "./core/TaskPool.js";
+import { runtimeKey } from "./utils/getRuntimeKey.js";
 
 export class WorkioInstance {
 
-	constructor({ workerFn, config, constructorArgs }) {
+	constructor({ workerFn, constructorConfig, constructorArgs }) {
 
 		const workerInstance = new Worker(getScriptURL(`
 			(async () => {
+
+				class WorkioOp {
+					constructor() { }
+				}
+
+				const ENV = {
+					OP_CLOSE: new WorkioOp()
+				}
+
+				self.close = function() {
+					return ENV.OP_CLOSE
+				};
 					
 				let sudo = crypto.randomUUID();
 			
 				self.postMessage({ sudo });
-			
-				self.close = function() {
-					self.postMessage({ close: true, sudo })
-				};
-			
+
 				const publicFunctionInterface = {};
 			
-				for(const index in publicFunctionInterface) {
-					if(!(publicFunctionInterface[index] instanceof Function)) {
-						delete publicFunctionInterface[index]
-					}
-				};
-			
-				self.addEventListener("message", async ({ data }) => {
+				self.${runtimeKey === "node"? "on" : "addEventListener"}("message", async ({ data }) => {
+					if(data.constructorArgs) {
+						let sudo = undefined;
+						Object.assign(publicFunctionInterface, await (${workerFn.toString()})(...data.constructorArgs));
+						for(const index in publicFunctionInterface) {
+							if(!(publicFunctionInterface[index] instanceof Function)) {
+								delete publicFunctionInterface[index]
+							}
+						};
+					};
 					if("task" in data) {
 						if(data.task in publicFunctionInterface) {
-							self.postMessage({ returnValue: await publicFunctionInterface[data.task](...data.args), taskId: data.taskId, sudo })
+							const returnValue = await publicFunctionInterface[data.task](...data.args);
+							self.postMessage({
+								sudo,
+								returnValue,
+								taskId: data.taskId,
+								close: returnValue === ENV.OP_CLOSE,
+							})
 						} else {
 							self.postMessage({ methodNotFound: true, taskId: data.taskId, sudo })
 						}
-					}
-					if(data.constructorArgs) {
-						let sudo = undefined;
-						Object.assign(publicFunctionInterface, await (${workerFn.toString()})(data.constructorArgs))
 					}
 				}, { passive: true });
 			
@@ -45,7 +59,7 @@ export class WorkioInstance {
 
 		let sudo = null;
 		
-		workerInstance.postMessage({ constructorArgs });
+		workerInstance.postMessage({ constructorArgs: [...constructorArgs] });
 
 		workerInstance.addEventListener("message", ({ data }) => {
 			if(data.sudo) {
@@ -54,12 +68,11 @@ export class WorkioInstance {
 						sudo = data.sudo
 						break;
 					case data.sudo:
-						if(data.close) {
-							workerInstance.terminate();
-							return;
-						}
-						if(data.returnValue) {
+						if("returnValue" in data) {
 							personalTaskPool.setResponse(data) // { taskId, returnValue }
+							if(data.close === true) {
+								workerInstance.terminate()
+							}
 						}
 						if(data.methodNotFound) {
 							personalTaskPool.rejectResponse(data)

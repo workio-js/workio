@@ -20,30 +20,37 @@ class Workio {
 			throw new TypeError("workerFn is not a type of function")
 		};
 
-		const constructorConfig = constConfig(config)
+		const constructorConfig = constConfig(config? config : {});
 
-		switch(constructorConfig.type) {
+		/**
+		 * as: String: "worker" "function"
+		 * shared: String
+		 * 
+		 */
+
+		switch(constructorConfig.as) {
 			case "worker":
 				return class extends WorkioInstance {
 					/**
 					 * @param  {...any} constructorArgs 
 					 */
-					constructor(...constructorArgs) {
-						super({ workerFn, constructorConfig, constructorArgs })
+					constructor() {
+						super({ workerFn, constructorConfig, constructorArgs: arguments })
 					}
 				}
 
 			case "function":
-				return new WorkioFunction(workerFn, constructorConfig)
+				return new WorkioFunction(workerFn)
 		}
 	}
 
 	/**
 	 * @param { Object } options
 	 * @param { Boolean } [options.debug]
+	 * @param { Number } [options.maxFunctionPending]
 	 */
 
-	static configure(options) {
+	static config(options) {
 
 	}
 

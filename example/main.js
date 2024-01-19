@@ -1,4 +1,4 @@
-import { Workio } from "../build/mod.js"
+import { Workio } from "../src/Workio.js"
 
 const ExampleWorker = new Workio(() => {
 
@@ -18,8 +18,6 @@ const instance = new ExampleWorker();
 
 console.log("calc start");
 
-(async () => {
-	console.log(await instance.calc());
-	
-	await instance.close();
-})()
+console.log(await instance.calc());
+
+await instance.close();

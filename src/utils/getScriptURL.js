@@ -3,5 +3,5 @@
  */
 
 export function getScriptURL(scriptStr) {
-	return URL.createObjectURL(new File([scriptStr], "workioscript.js", { type: "application/javascript" }));
+	return URL.createObjectURL(new Blob([scriptStr], { type: "application/javascript" }));
 };
