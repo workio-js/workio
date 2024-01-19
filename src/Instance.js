@@ -1,6 +1,6 @@
-import { getScriptURL } from "./utils/getScriptURL.js";
-import { TaskPool } from "./core/TaskPool.js";
-import { runtimeKey } from "./utils/getRuntimeKey.js";
+const { getScriptURL } = await import("./utils/getScriptURL.js");
+const { TaskPool } = await import("./core/TaskPool.js");
+const { runtimeKey } = await import("./utils/getRuntimeKey.js");
 
 export class WorkioInstance {
 
@@ -13,7 +13,7 @@ export class WorkioInstance {
 					constructor() { }
 				}
 
-				const ENV = {
+				let ENV = {
 					OP_CLOSE: new WorkioOp()
 				}
 
@@ -30,7 +30,9 @@ export class WorkioInstance {
 				self.${runtimeKey === "node"? "on" : "addEventListener"}("message", async ({ data }) => {
 					if(data.constructorArgs) {
 						let sudo = undefined;
+
 						Object.assign(publicFunctionInterface, await (${workerFn.toString()})(...data.constructorArgs));
+
 						for(const index in publicFunctionInterface) {
 							if(!(publicFunctionInterface[index] instanceof Function)) {
 								delete publicFunctionInterface[index]
@@ -47,7 +49,11 @@ export class WorkioInstance {
 								close: returnValue === ENV.OP_CLOSE,
 							})
 						} else {
-							self.postMessage({ methodNotFound: true, taskId: data.taskId, sudo })
+							self.postMessage({
+								sudo,
+								methodNotFound: true,
+								taskId: data.taskId,
+							})
 						}
 					}
 				}, { passive: true });

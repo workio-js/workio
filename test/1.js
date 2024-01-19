@@ -1,4 +1,4 @@
-import { Workio } from "../src/Workio.js"
+const { Workio } = await import("../src/Workio.js")
 
 const ExampleWorker = new Workio(({ max }) => {
 
@@ -18,11 +18,6 @@ const ExampleWorker = new Workio(({ max }) => {
 });
 
 const instance = new ExampleWorker({ max: 1e9 });
-
-console.log("calc start");
-
-// (async () => {
-// })()
 
 console.log(await instance.calc(1e9));
 

@@ -1,9 +1,9 @@
-import { WorkioInstance } from "./Instance.js";
-import { WorkioFunction } from "./Function.js";
-import { WorkioServer } from "./Server.js";
+const { WorkioInstance } = await import("./Instance.js");
+const { WorkioFunction } = await import("./Function.js");
+const { WorkioServer } = await import("./Server.js");
 
-import { runtimeKey } from "./utils/getRuntimeKey.js";
-import { constConfig } from "./utils/getConstConfig.js";
+const { runtimeKey } = await import("./utils/getRuntimeKey.js");
+const { constConfig } = await import("./utils/getConstConfig.js");
 
 class Workio {
 
