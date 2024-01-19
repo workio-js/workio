@@ -10,7 +10,7 @@ const mainBuiltText = (await esbuild.build({
 	bundle: true,
 	minify: true,
 	format: "esm",
-})).outputFiles[0].text.replace(/\t|\n/g, "")
+})).outputFiles[0].text
 
 esbuild.stop()
 
