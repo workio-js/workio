@@ -35,7 +35,8 @@ export default defineConfig({
     },
     appearance: 'dark',
     nav: [
-      { text: 'ガイド', link: '/example' },
+      { text: 'API', link: '/example' },
+      { text: 'CLI', link: '/example' },
       {
         text: 'Playground',
         link: 'https://www.thegithubshop.com/',

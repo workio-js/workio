@@ -2,6 +2,16 @@ const { getScriptURL } = await import("./utils/getScriptURL.js");
 const { TaskPool } = await import("./core/TaskPool.js");
 const { runtimeKey } = await import("./utils/getRuntimeKey.js");
 
+class OffscreenDocument {
+	constructor(document) {
+
+	}
+}
+
+const devElement = new OffscreenDocument(document.querySelector("#dev"));
+
+devElement.textContent = "a";
+
 export class WorkioWorker {
 
 	constructor({ workerFn, constructorConfig, constructorArgs }) {
@@ -15,7 +25,7 @@ export class WorkioWorker {
 
 				let ENV = {
 					OP_CLOSE: new WorkioOp()
-				}
+				};
 
 				self.close = function() {
 					return ENV.OP_CLOSE
@@ -26,6 +36,8 @@ export class WorkioWorker {
 				self.postMessage({ sudo });
 
 				const publicFunctionInterface = {};
+
+				self.window = self;
 			
 				self.${runtimeKey === "node"? "on" : "addEventListener"}("message", async ({ data }) => {
 					if(data.constructorArgs) {

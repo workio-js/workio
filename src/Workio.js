@@ -72,3 +72,9 @@ if(runtimeKey !== "other") {
 }
 
 export { Workio }
+
+Workio.serve({ app })
+
+// client
+
+const { fn1 } = new Workio("https://??????????.deno.dev");
