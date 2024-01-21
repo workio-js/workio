@@ -1,5 +1,4 @@
-![Workio - The Web Worker Framework](./resources/readme-title.svg)
----
+# [Workio](https://workio.dev)
 Workio is a JavaScript library for building and managing Web Workers.
 
 
