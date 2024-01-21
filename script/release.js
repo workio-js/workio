@@ -10,3 +10,5 @@ if(await exists(`./build/@${releaseVersion}`)) {
 	copy("./build/min.js", `./release/@${releaseVersion}/min.js`)
 	// copy("./docs/docs/.vitepress/dist", `./release/*`)
 }
+
+npm("three")
