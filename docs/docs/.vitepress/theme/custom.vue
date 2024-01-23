@@ -7,7 +7,7 @@ import DefaultTheme from 'vitepress/theme';
     <template #home-hero-image
       ><iframe
         id="sb-preview"
-        src="https://stackblitz.com/edit/js-y2bmps?embed=1&file=index.js&hideExplorer=1&hideNavigation=1&theme=dark&view=editor"
+        src="https://stackblitz.com/edit/web-platform-hceprw?embed=1&file=script.js&hideExplorer=1&hideNavigation=1&theme=dark&view=editor"
         style="visibility:hidden;"
         onload="this.style.visibility = 'visible';"
       ></iframe
