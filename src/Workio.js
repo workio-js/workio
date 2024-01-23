@@ -1,6 +1,5 @@
 const { WorkioWorker } = await import("./Worker.js");
 const { WorkioFunction } = await import("./Function.js");
-const { WorkioServer } = await import("./Server.js");
 
 const { runtimeKey } = await import("./utils/getRuntimeKey.js");
 const { constConfig } = await import("./utils/getConstConfig.js");
@@ -51,10 +50,6 @@ class Workio {
 	 */
 
 	static config(options) {
-
-	}
-
-	static import(url) {
 
 	}
 

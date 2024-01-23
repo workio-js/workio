@@ -2,6 +2,8 @@ const { getScriptURL } = await import("./utils/getScriptURL.js");
 const { TaskPool } = await import("./core/TaskPool.js");
 const { runtimeKey } = await import("./utils/getRuntimeKey.js");
 
+const { Worker } = await import("node:worker_threads")
+
 export class WorkioWorker {
 
 	constructor({ workerFn, constructorConfig, constructorArgs }) {
@@ -17,9 +19,12 @@ export class WorkioWorker {
 					OP_CLOSE: new WorkioOp()
 				};
 
+				const self = globalThis;
+
 				self.close = function() {
 					return ENV.OP_CLOSE
 				};
+
 					
 				const sudo = crypto.randomUUID();
 			
@@ -59,7 +64,7 @@ export class WorkioWorker {
 				}, { passive: true });
 			
 			})()
-		`), { type: "module" });
+		`), { type: "module", eval: true });
 
 		const personalTaskPool = new TaskPool();
 
@@ -67,7 +72,7 @@ export class WorkioWorker {
 		
 		workerInstance.postMessage({ constructorArgs: [...constructorArgs] });
 
-		workerInstance.addEventListener("message", ({ data }) => {
+		workerInstance[(runtimeKey === "node")? "on" : "addEventListener"]("message", ({ data }) => {
 			if(data.sudo) {
 				switch(sudo) {
 					case null:
@@ -92,7 +97,7 @@ export class WorkioWorker {
 			get(target, prop, receiver) {
 				return function() {
 					return new Promise((resolve, reject) => {
-						const taskId = personalTaskPool.newTask({ resolve, reject });
+						const taskId = personalTaskPool.push({ resolve, reject });
 						workerInstance.postMessage({ task: prop, args: [...arguments], taskId })
 					})
 				}

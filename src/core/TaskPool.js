@@ -5,7 +5,7 @@ export class TaskPool {
 		this.vacantId = [];
 		this.reservedResponse = [];
 	}
-	newTask({ resolve, reject }) {
+	push({ resolve, reject }) {
 		let currentId = null
 		if(this.vacantId.length) {
 			currentId = this.vacantId[0]
