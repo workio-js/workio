@@ -10,7 +10,6 @@ export default defineConfig({
     ["link", { rel: "preconnect", href: "https://fonts.googleapis.com" }],
     ["link", { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: true }],
     ["link", { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Manrope:wght@500;800&display=swap" }],
-    ["link", { rel: "preload", href: "https://stackblitz.com/edit/js-y2bmps?embed=1&file=index.js&hideExplorer=1&hideNavigation=1&theme=dark&view=editor", as: "document" }],
 
     ["meta", { property: "og:image", content: "../../workio-ogimage.png" }],
     ["meta", { property: "og:site_name", content: "Workio - The web worker framework" }],
@@ -36,7 +35,6 @@ export default defineConfig({
     appearance: 'dark',
     nav: [
       { text: 'API', link: '/example' },
-      { text: 'CLI', link: '/example' },
       {
         text: 'Playground',
         link: 'https://www.thegithubshop.com/',
