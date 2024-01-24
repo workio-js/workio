@@ -7,10 +7,18 @@ export class WorkioFunction {
 	 * @param { Function } workerFn 
 	 */
 	constructor(workerFn) {
-		const scriptURL = getScriptURL(`
-			self.${runtimeKey === "node"? "on" : "addEventListener"}("message", ({ data }) => {
+		// const scriptURL = getScriptURL(`
+		// 	self.${runtimeKey === "node"? "on" : "addEventListener"}("message", ({ data }) => {
 
-			})
+		// 	})
+		// `)
+		new Worker(`
+			(async () => {
+				self.addEventListener("message", ({ data }) => {
+					self.postMessage(await (${workerFn.toString()})(...data.argObject));
+					self.close();
+				})
+			})()
 		`)
 		return function() {
 			const workerInstance = new Worker(scriptURL);

@@ -29,10 +29,12 @@ class Workio {
 					constructorConfig = constConfig(config? config : {});
 
 				return function WorkioInitializer(...workerArgs) {
+
 					return (new.target?
-						new WorkioWorker({ fnTemplateString, workerArgs }):
+						new WorkioWorker({ workerFn, workerArgs }):
 						new Promise((resolve) => new WorkioFunction({ resolve, fnTemplateString, workerArgs }))
-					)
+					);
+
 				}
 			}
 
@@ -73,16 +75,5 @@ class Workio {
 	}
 
 };
-
-if(runtimeKey !== "other") {
-	Object.assign(Workio, {
-		/**
-		 * @param { Object } targetFn 
-		 */
-		serve(targetFn) {
-			new WorkioServer(targetFn)
-		}
-	})
-}
 
 export { Workio }

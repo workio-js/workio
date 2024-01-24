@@ -2,7 +2,7 @@ const { TaskPool } = await import("./TaskPool.js")
 
 const { runtimeKey } = await import("../utils/getRuntimeKey.js");
 const { getScriptURL } = await import("../utils/getScriptURL.js");
-const { random32 } = await import("../utils/getRandom32.js");
+const { random64: random32 } = await import("../utils/getRandom64.js");
 
 const Worker = (runtimeKey === "node")? await import("node:worker_threads").Worker : globalThis.Worker;
 
