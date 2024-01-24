@@ -1,7 +1,9 @@
 # [Workio](https://workio.dev)
-![Static Badge](https://img.shields.io/badge/V8-8.0-lightgreen?logo=v8)
+![Static Badge](https://img.shields.io/badge/Chrome-80-lightgreen?logo=google-chrome)
+![Static Badge](https://img.shields.io/badge/Edge-80-lightgreen?logo=microsoft-edge)
+![Static Badge](https://img.shields.io/badge/Opera-67-lightgreen?logo=opera)
 ![Static Badge](https://img.shields.io/badge/Firefox-114-lightgreen?logo=firefox)
-![Static Badge](https://img.shields.io/badge/Safari-67-lightgreen?logo=safari)
+![Static Badge](https://img.shields.io/badge/Safari-15-lightgreen?logo=safari)
 ![Static Badge](https://img.shields.io/badge/Deno-1.0-lightgreen?logo=deno)
 
 Workio is a JavaScript library for building and managing Web Workers.
