@@ -1,4 +1,4 @@
-const { Workio } = await import("../src/Workio.js");
+const { Workio } = await import("../release/@0.0.4/mod.js");
 
 const ExampleWorker = new Workio(({ max }) => {
 

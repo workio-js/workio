@@ -2,7 +2,7 @@ const { getScriptURL } = await import("./utils/getScriptURL.js");
 const { TaskPool } = await import("./core/TaskPool.js");
 const { runtimeKey } = await import("./utils/getRuntimeKey.js");
 
-const { Worker } = await import("node:worker_threads")
+// const { Worker } = await import("node:worker_threads");
 
 export class WorkioWorker {
 
@@ -25,12 +25,23 @@ export class WorkioWorker {
 					return ENV.OP_CLOSE
 				};
 
-					
 				const sudo = crypto.randomUUID();
 			
 				self.postMessage({ sudo });
 
 				self.window = self;
+
+				self.env = {
+					get type() {
+						return "function"
+					}
+				};
+
+				// Object.defineProperties(self.env, {
+				// 	type: {
+				// 		value: 
+				// 	}
+				// })
 			
 				self.${runtimeKey === "node"? "on" : "addEventListener"}("message", async ({ data }) => {
 					if(data.constructorArgs) {

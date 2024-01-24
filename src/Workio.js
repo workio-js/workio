@@ -11,15 +11,34 @@ class Workio {
 	 * 
 	 * @param { Object } [config]
 	 * @param { String } [config.shared]
-	 * @param { String } [config.as]
 	 */
 
 	constructor(workerFn, config) {
-		if(!(workerFn instanceof Function)) {
-			throw new TypeError("workerFn is not a type of function")
-		};
 
-		const constructorConfig = constConfig(config? config : {});
+		switch(false) {
+
+			case new.target:
+				throw new Error("calling Workio constructor without new is invalid");
+
+			case workerFn instanceof Function:
+				throw new TypeError("first argument must be a type of function");
+
+			default: {
+				const
+					fnTemplateString = workerFn.toString(),
+					constructorConfig = constConfig(config? config : {});
+
+				return function WorkioInitializer(...workerArgs) {
+					return (new.target?
+						new WorkioWorker({ fnTemplateString, workerArgs }):
+						new Promise((resolve) => new WorkioFunction({ resolve, fnTemplateString, workerArgs }))
+					)
+				}
+			}
+
+		}
+
+
 
 		/**
 		 * as: String: "worker" "function"

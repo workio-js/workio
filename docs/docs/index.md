@@ -41,9 +41,9 @@ features:
     title: Promise-based
     details: Fully-managed resolve manager brings perfect asynchronus I/O.
     link: /docs/getting-started
-  - icon: 🥳
-    title: Easily Sharable
-    details: Want to share across contexts? Just enable "share" properties!
+  - icon: 🔧
+    title: Flexible Design
+    details: Worker with constructor arguments. 
     link: /docs/getting-started
   - icon: 🚚
     title: Export Module
