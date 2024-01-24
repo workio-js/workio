@@ -25,14 +25,13 @@ class Workio {
 
 			default: {
 				const
-					fnTemplateString = workerFn.toString(),
 					constructorConfig = constConfig(config? config : {});
 
 				return function WorkioInitializer(...workerArgs) {
 
 					return (new.target?
 						new WorkioWorker({ workerFn, workerArgs }):
-						new Promise((resolve) => new WorkioFunction({ resolve, fnTemplateString, workerArgs }))
+						new Promise((resolve) => new WorkioFunction({ resolve, workerFn, workerArgs }))
 					);
 
 				}

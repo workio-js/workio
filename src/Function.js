@@ -6,7 +6,7 @@ export class WorkioFunction {
 	/**
 	 * @param { Function } workerFn 
 	 */
-	constructor(workerFn) {
+	constructor({ resolve, workerFn, workerArgs }) {
 		// const scriptURL = getScriptURL(`
 		// 	self.${runtimeKey === "node"? "on" : "addEventListener"}("message", ({ data }) => {
 

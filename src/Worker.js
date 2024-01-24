@@ -8,6 +8,12 @@ const { random64 } = await import("./utils/getRandom64.js")
 
 export class WorkioWorker {
 
+	/**
+	 * 
+	 * @param { Object } param0 
+	 * @returns { Proxy }
+	 */
+
 	constructor({ workerFn, constructorConfig, workerArgs }) {
 
 		const
@@ -44,22 +50,23 @@ export class WorkioWorker {
 						return self.env.op_close;
 					};
 
-
 					let
 						sudoKey = "${sudoKey}",
-						pFI = {};
+						publicFunctionInterface = {};
 
 					self.${runtimeKey === "node"? "on" : "addEventListener"}("message", async ({ data }) => {
 						if(data.workerArgs) {
-							Object.assign(pFI, (function () {
-								let sudoKey = undefined;
-								let pFI = undefined;
-								return (${workerFn.toString()})(...data.workerArgs);
+							Object.assign(publicFunctionInterface, await (async function() {
+								let
+									sudoKey = undefined,
+									publicFunctionInterface = undefined;
+
+								return await (${workerFn.toString()})(...data.workerArgs);
 							})())
 						};
 						if("task" in data) {
-							if(data.task in pFI) {
-								const returnValue = await pFI[data.task](...data.args);
+							if(data.task in publicFunctionInterface) {
+								const returnValue = await publicFunctionInterface[data.task](...data.args);
 								self.postMessage({
 									sudoKey,
 									returnValue,
@@ -79,7 +86,7 @@ export class WorkioWorker {
 				})()
 			`), { type: "module", eval: true });
 		
-		workerInstance.postMessage({ workerArgs: [...workerArgs] });
+		workerInstance.postMessage({ workerArgs, sudoKey });
 
 		workerInstance[(runtimeKey === "node")? "on" : "addEventListener"]("message", ({ data }) => {
 			if(data.sudoKey) {
