@@ -1,6 +1,5 @@
 # [Workio](https://workio.dev)
-![Static Badge](https://img.shields.io/badge/Chrome-80-lightgreen?logo=google-chrome)
-![Static Badge](https://img.shields.io/badge/Edge-80-lightgreen?logo=microsoft-edge)
+![Static Badge](https://img.shields.io/badge/Chromium-80-lightgreen?logo=v8)
 ![Static Badge](https://img.shields.io/badge/Firefox-114-lightgreen?logo=firefox)
 ![Static Badge](https://img.shields.io/badge/Safari-67-lightgreen?logo=safari)
 ![Static Badge](https://img.shields.io/badge/Deno-1.0-lightgreen?logo=deno)
