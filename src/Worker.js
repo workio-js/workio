@@ -2,7 +2,8 @@ const
 	{ scriptURL: getScriptURL } = await import("./ScriptURL.js"),
 	{ TaskPool } = await import("./TaskPool.js"),
 	{ runtimeKey } = await import("./RuntimeKey.js"),
-	{ random64 } = await import("./Random64.js");
+	{ random64 } = await import("./Random64.js"),
+	{ workerTemp } = await import("./template/Worker.js");
 
 // const { Worker } = await import("node:worker_threads");
 
@@ -20,8 +21,12 @@ export class WorkioWorker {
 			pFIIndex = {},
 			sudoKey = random64(),
 			personalTaskPool = new TaskPool(),
-			workerInstance = new Worker(getScriptURL(`\0workerTemp\0`), { type: "module", eval: true });
-		
+			workerInstance = new Worker(
+				getScriptURL(
+					"(" + workerTemp.toString().replace(/"\\0workerFn\\0"/, "(" + workerFn.toString() + ")").replace(/\\0sudoKey\\0/, sudoKey) + ")()"
+				), { type: "module", eval: true }
+			);
+
 		workerInstance.postMessage({ workerArgs, sudoKey });
 
 		workerInstance[(runtimeKey === "node")? "on" : "addEventListener"]("message", ({ data }) => {

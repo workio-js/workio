@@ -1,4 +1,4 @@
-(async () => {
+export async function workerTemp() {
 
 	class WorkioOp {
 		constructor() { }
@@ -29,7 +29,7 @@
 	};
 
 	let
-		sudoKey = "${sudoKey}",
+		sudoKey = "\0sudoKey\0",
 		publicFunctionInterface = {};
 
 	self.addEventListener("message", async ({ data }) => {
@@ -65,4 +65,4 @@
 		}
 	}, { passive: true });
 
-})()
+}

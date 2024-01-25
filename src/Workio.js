@@ -33,33 +33,8 @@ class Workio {
 						new WorkioWorker({ workerFn, workerArgs }):
 						new Promise((resolve) => new WorkioFunction({ resolve, workerFn, workerArgs }))
 					);
-
 				}
 			}
-
-		}
-
-
-
-		/**
-		 * as: String: "worker" "function"
-		 * shared: String
-		 * 
-		 */
-
-		switch(constructorConfig.as) {
-			case "worker":
-				return class extends WorkioWorker {
-					/**
-					 * @param  {...any} constructorArgs 
-					 */
-					constructor() {
-						super({ workerFn, constructorConfig, constructorArgs: arguments })
-					}
-				}
-
-			case "function":
-				return new WorkioFunction(workerFn)
 		}
 	}
 
