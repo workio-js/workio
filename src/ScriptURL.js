@@ -5,6 +5,6 @@ const { runtimeKey } = await import("./RuntimeKey.js")
  * @param { String } scriptStr 
  */
 
-export function getScriptURL(scriptStr) {
+export function scriptURL(scriptStr) {
 	return (runtimeKey === "node")? scriptStr : URL.createObjectURL(new Blob([scriptStr], { type: "application/javascript" }))
 };

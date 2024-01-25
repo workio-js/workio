@@ -1,5 +1,5 @@
 const
-	{ getScriptURL } = await import("./ScriptURL.js"),
+	{ scriptURL: getScriptURL } = await import("./ScriptURL.js"),
 	{ TaskPool } = await import("./TaskPool.js"),
 	{ runtimeKey } = await import("./RuntimeKey.js"),
 	{ random64 } = await import("./Random64.js");
