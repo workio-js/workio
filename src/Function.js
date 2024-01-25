@@ -12,13 +12,13 @@ export class WorkioFunction {
 
 		// 	})
 		// `)
-		new Worker(`
-			(async () => {
-				self.addEventListener("message", ({ data }) => {
-					self.postMessage(await (${workerFn.toString()})(...data.argObject));
-					self.close();
-				})
-			})()
-		`)
+		// new Worker(`
+		// 	(async () => {
+		// 		self.addEventListener("message", ({ data }) => {
+		// 			self.postMessage(await (${workerFn.toString()})(...data.argObject));
+		// 			self.close();
+		// 		})
+		// 	})()
+		// `)
 	}
 }
