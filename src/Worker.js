@@ -1,8 +1,8 @@
-const { getScriptURL } = await import("./utils/getScriptURL.js");
-const { TaskPool } = await import("./core/TaskPool.js");
-const { runtimeKey } = await import("./utils/getRuntimeKey.js");
-
-const { random64 } = await import("./utils/getRandom64.js")
+const
+	{ getScriptURL } = await import("./utils/getScriptURL.js"),
+	{ TaskPool } = await import("./core/TaskPool.js"),
+	{ runtimeKey } = await import("./utils/getRuntimeKey.js"),
+	{ random64 } = await import("./utils/getRandom64.js");
 
 // const { Worker } = await import("node:worker_threads");
 
@@ -17,6 +17,7 @@ export class WorkioWorker {
 	constructor({ workerFn, constructorConfig, workerArgs }) {
 
 		const
+			pFIIndex = {},
 			sudoKey = random64(),
 			personalTaskPool = new TaskPool(),
 			workerInstance = new Worker(getScriptURL(`
@@ -62,7 +63,8 @@ export class WorkioWorker {
 									publicFunctionInterface = undefined;
 
 								return await (${workerFn.toString()})(...data.workerArgs);
-							})())
+							})());
+							self.postMessage({ pFIIndex: Object.keys(publicFunctionInterface), sudoKey })
 						};
 						if("task" in data) {
 							if(data.task in publicFunctionInterface) {
@@ -101,6 +103,9 @@ export class WorkioWorker {
 						if(data.methodNotFound) {
 							personalTaskPool.rejectResponse(data)
 						}
+						if(data.pFIIndex) {
+							Object.assign(pFIIndex, data.pFIIndex);
+						}
 				}
 			}
 		}, { passive: true });
@@ -109,9 +114,12 @@ export class WorkioWorker {
 			get(target, prop, receiver) {
 				return function() {
 					return new Promise((resolve, reject) => {
-						const taskId = personalTaskPool.push({ resolve, reject });
-						workerInstance.postMessage({ task: prop, args: [...arguments], taskId })
-					})
+						workerInstance.postMessage({
+							task: prop,
+							args: [...arguments],
+							taskId: personalTaskPool.push({ resolve, reject })
+						});
+					});
 				}
 			}
 		})

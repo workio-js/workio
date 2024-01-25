@@ -20,11 +20,5 @@ export class WorkioFunction {
 				})
 			})()
 		`)
-		return function() {
-			const workerInstance = new Worker(scriptURL);
-			return new Promise((resolve, reject) => {
-				workerInstance.postMessage
-			})
-		}
 	}
 }
