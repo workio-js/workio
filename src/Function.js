@@ -1,6 +1,6 @@
-import { TaskPool } from "./core/TaskPool.js";
-import { getScriptURL } from "./utils/getScriptURL.js";
-import { runtimeKey } from "./utils/getRuntimeKey.js";
+import { TaskPool } from "./TaskPool.js";
+import { getScriptURL } from "./ScriptURL.js";
+import { runtimeKey } from "./RuntimeKey.js";
 
 export class WorkioFunction {
 	/**

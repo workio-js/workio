@@ -1,8 +1,8 @@
 const
 	{ WorkioWorker } = await import("./Worker.js"),
 	{ WorkioFunction } = await import("./Function.js"),
-	{ runtimeKey } = await import("./utils/getRuntimeKey.js"),
-	{ constConfig } = await import("./utils/getConstConfig.js");
+	{ runtimeKey } = await import("./RuntimeKey.js"),
+	{ constConfig } = await import("./ConstConfig.js");
 
 class Workio {
 

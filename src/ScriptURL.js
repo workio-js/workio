@@ -1,4 +1,4 @@
-const { runtimeKey } = await import("./getRuntimeKey.js")
+const { runtimeKey } = await import("./RuntimeKey.js")
 // const { URL } = await import("node:url")
 
 /**

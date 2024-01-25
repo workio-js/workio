@@ -1,8 +1,8 @@
 const
-	{ getScriptURL } = await import("./utils/getScriptURL.js"),
-	{ TaskPool } = await import("./core/TaskPool.js"),
-	{ runtimeKey } = await import("./utils/getRuntimeKey.js"),
-	{ random64 } = await import("./utils/getRandom64.js");
+	{ getScriptURL } = await import("./ScriptURL.js"),
+	{ TaskPool } = await import("./TaskPool.js"),
+	{ runtimeKey } = await import("./RuntimeKey.js"),
+	{ random64 } = await import("./Random64.js");
 
 // const { Worker } = await import("node:worker_threads");
 
