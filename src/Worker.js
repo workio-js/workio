@@ -1,5 +1,5 @@
 const
-	{ scriptURL: getScriptURL } = await import("./ScriptURL.js"),
+	{ scriptURL } = await import("./ScriptURL.js"),
 	{ TaskPool } = await import("./TaskPool.js"),
 	{ runtimeKey } = await import("./RuntimeKey.js"),
 	{ random64 } = await import("./Random64.js"),
@@ -22,7 +22,7 @@ export class WorkioWorker {
 			sudoKey = random64(),
 			personalTaskPool = new TaskPool(),
 			workerInstance = new Worker(
-				getScriptURL(
+				scriptURL(
 					"(" + workerTemp.toString().replace(/"\\0workerFn\\0"/, "(" + workerFn.toString() + ")").replace(/\\0sudoKey\\0/, sudoKey) + ")()"
 				), { type: "module", eval: true }
 			);

@@ -153,16 +153,16 @@ var Worker_exports2 = {};
 __export(Worker_exports2, {
   WorkioWorker: () => WorkioWorker
 });
-var getScriptURL, TaskPool2, runtimeKey3, random642, workerTemp2, WorkioWorker;
+var scriptURL2, TaskPool2, runtimeKey3, random642, workerTemp2, WorkioWorker;
 var init_Worker2 = __esm(async () => {
-  ({scriptURL: getScriptURL} = await init_ScriptURL().then(() => ScriptURL_exports));
+  ({scriptURL: scriptURL2} = await init_ScriptURL().then(() => ScriptURL_exports));
   ({TaskPool: TaskPool2} = await Promise.resolve().then(() => (init_TaskPool(), TaskPool_exports)));
   ({runtimeKey: runtimeKey3} = await Promise.resolve().then(() => (init_RuntimeKey(), RuntimeKey_exports)));
   ({random64: random642} = await Promise.resolve().then(() => (init_Random64(), Random64_exports)));
   ({workerTemp: workerTemp2} = await Promise.resolve().then(() => (init_Worker(), Worker_exports)));
   WorkioWorker = class {
     constructor({workerFn, constructorConfig, workerArgs}) {
-      const pFIIndex = {}, sudoKey = random642(), personalTaskPool = new TaskPool2(), workerInstance = new Worker(getScriptURL("(" + workerTemp2.toString().replace(/"\\0workerFn\\0"/, "(" + workerFn.toString() + ")").replace(/\\0sudoKey\\0/, sudoKey) + ")()"), {type: "module", eval: true});
+      const pFIIndex = {}, sudoKey = random642(), personalTaskPool = new TaskPool2(), workerInstance = new Worker(scriptURL2("(" + workerTemp2.toString().replace(/"\\0workerFn\\0"/, "(" + workerFn.toString() + ")").replace(/\\0sudoKey\\0/, sudoKey) + ")()"), {type: "module", eval: true});
       workerInstance.postMessage({workerArgs, sudoKey});
       workerInstance[runtimeKey3 === "node" ? "on" : "addEventListener"]("message", ({data}) => {
         if (data.sudoKey) {

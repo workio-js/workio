@@ -1,4 +1,4 @@
-const { Workio } = await import("../build/mod.js");
+const { Workio } = await import("../src/Workio.js");
 
 const ExampleWorker = new Workio(({ max }) => {
 
@@ -13,7 +13,7 @@ const ExampleWorker = new Workio(({ max }) => {
 		return buffer;
 	}
 
-	return { calc, close }
+	return { calc, close };
 
 });
 
