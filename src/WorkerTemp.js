@@ -3,8 +3,6 @@ export async function workerTemp() {
 	class WorkioOp {
 		constructor() { }
 	}
-
-	const self = globalThis;
 	
 	self.window = self;
 	
@@ -56,15 +54,15 @@ export async function workerTemp() {
 					close: (returnValue === self.env.op_close),
 				},
 				(returnValue instanceof (
-					ArrayBuffer || 
-					MessagePort || 
-					ReadableStream || 
-					WritableStream || 
-					TransformStream || 
-					AudioData || 
-					ImageBitmap || 
-					VideoFrame || 
-					OffscreenCanvas || 
+					ArrayBuffer ||
+					MessagePort ||
+					ReadableStream ||
+					WritableStream ||
+					TransformStream ||
+					AudioData ||
+					ImageBitmap ||
+					VideoFrame ||
+					OffscreenCanvas ||
 					RTCDataChannel
 				)? [returnValue] : null))
 			} else {
