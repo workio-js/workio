@@ -7,10 +7,10 @@ const ExampleWorker = new Workio(({ max }) => {
 		if(max < length) {
 			return 0;
 		}
-		for(let i = 0; i < length; i++) {
-			buffer = i;
-		};
-		return buffer;
+		// for(let i = 0; i < length; i++) {
+		// 	buffer = i;
+		// };
+		return new ArrayBuffer(1000 * 1000 * 1000);
 	}
 
 	return { calc, close };

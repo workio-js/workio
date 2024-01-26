@@ -18,7 +18,7 @@ export async function workerTemp() {
 				op_close: {
 					value: new WorkioOp(),
 					writable: false,
-				}
+				},
 			}),
 			writable: false,
 		},
@@ -53,8 +53,20 @@ export async function workerTemp() {
 					sudoKey,
 					returnValue,
 					taskId: data.taskId,
-					close: returnValue === self.env.op_close,
-				})
+					close: (returnValue === self.env.op_close),
+				},
+				(returnValue instanceof (
+					ArrayBuffer || 
+					MessagePort || 
+					ReadableStream || 
+					WritableStream || 
+					TransformStream || 
+					AudioData || 
+					ImageBitmap || 
+					VideoFrame || 
+					OffscreenCanvas || 
+					RTCDataChannel
+				)? [returnValue] : null))
 			} else {
 				self.postMessage({
 					sudoKey,

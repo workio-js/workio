@@ -3,7 +3,7 @@ const
 	{ TaskPool } = await import("./TaskPool.js"),
 	{ runtimeKey } = await import("./RuntimeKey.js"),
 	{ random64 } = await import("./Random64.js"),
-	{ workerTemp } = await import("./template/Worker.js");
+	{ workerTemp } = await import("./WorkerTemp.js");
 
 // const { Worker } = await import("node:worker_threads");
 
