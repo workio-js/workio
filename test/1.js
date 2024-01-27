@@ -1,6 +1,6 @@
 const { Workio } = await import("../src/Workio.js");
 
-const ExampleWorker = new Workio(async ({ max }) => {
+const ExampleWorker = new Workio(({ max }) => {
 
 	function calc(length) {
 		let buffer = 0;

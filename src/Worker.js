@@ -22,9 +22,17 @@ export class WorkioWorker {
 			sudoKey = random64(),
 			personalTaskPool = new TaskPool(),
 			workerInstance = new Worker(
-				scriptURL(
-					"(" + workerTemp.toString().replace(/"\\0workerFn\\0"/, "(" + workerFn.toString() + ")").replace(/\\0sudoKey\\0/, sudoKey) + ")()"
-				), { type: "module", eval: true }
+				scriptURL(`(${
+					workerTemp.toString()
+						.replace(/"\\0workerFn\\0"/, "(" + workerFn.toString() + ")")
+						.replace(/\\0sudoKey\\0/, sudoKey)
+						.replace(/\\0origin\\0/, (() => {
+							switch(runtimeKey) {
+								case "other":
+									return window.location.origin;
+							}
+						})())
+				})()`), { type: "module", eval: true }
 			);
 
 		workerInstance.postMessage({ workerArgs, sudoKey });

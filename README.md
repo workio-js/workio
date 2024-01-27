@@ -13,7 +13,7 @@ Workio is a JavaScript library for building and managing Web Workers.
 - **Promise-based:** 
 - **I/O Optimization:** Caching is available for large primitives.
 
-Visit [StackBlitz](https://stackblitz.com/edit/web-platform-hceprw?file=script.js) for your first step into the developer experience at Workio. 
+[Visit StackBlitz for your first step into the developer experience at Workio.](https://stackblitz.com/edit/web-platform-hceprw?file=script.js)  
 
 ```javascript
 // Install
@@ -32,3 +32,4 @@ console.log(await workerInstance.sayHello("Foo")); // all methods are async
 
 await workerInstance.close();
 ```
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz_small.svg)](https://stackblitz.com/edit/web-platform-hceprw?file=script.js)
