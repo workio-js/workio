@@ -1,7 +1,11 @@
 <script type="module">
-	import { Workio } from "https://workio.dev/@0.0.4/mod.js";
-
+	const { Workio } = await import("../src/Workio.js");
+	
 	const ExampleWorker = new Workio(({ max }) => {
+
+		// const res = await fetch("./1.js")
+
+		// console.log(res)
 
 		function calc(length) {
 			let buffer = 0;
@@ -20,7 +24,7 @@
 
 	const instance = new ExampleWorker({ max: 1e9 });
 
-	console.log(await instance.calc(1e9));
+	// console.log(await instance.calc(1e9));
 
-	await instance.close();
+	// await instance.close();
 </script>

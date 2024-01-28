@@ -12,13 +12,11 @@ export async function workerTemp() {
 
 	class Op extends Promise {
 		constructor({ taskId }) { 
-			super((resolve, reject) => Object.assign(this, { resolve, reject }, arguments));
+			super((resolve, reject) => Object.assign(this, { promises: { resolve, reject } }, arguments));
 			self.postMessage()
 		}
 	}
-	
-	self.window = self;
-	
+
 	Object.defineProperties(self, {
 		env: {
 			value: Object.defineProperties({}, {
@@ -35,21 +33,30 @@ export async function workerTemp() {
 		},
 	});
 
-	self.close = function() {
-		return self.env.op_close;
-	};
+	Object.assign(self, {
+
+		window: self,
+
+		close: () => self.env.op_close,
+
+		// fetch: ((superFn) => function() {
+		// 	arguments[0] = new URL(arguments[0], import.meta.url)
+		// 	return superFn.apply(this, arguments);
+		// })(self.fetch),
+
+	});
+
 	
 	let
 		sudoKey = "\0sudoKey\0",
 		publicFunctionInterface = {};
 
-	import.meta.url = "\0origin\0";
+	import.meta.url = "\0base\0";
 
-	const legacyFetch = fetch;
-
-	self.fetch = function(resource, options) {
-
-	}
+	// self.fetch = ((superFn) => function() {
+	// 	arguments[0] = new URL(arguments[0], import.meta.url)
+	// 	return superFn.apply(this, arguments);
+	// })(self.fetch);
 
 	self.addEventListener("message", async ({ data }) => {
 		if(data.workerArgs) {
@@ -61,11 +68,9 @@ export async function workerTemp() {
 				sudoKey;
 				publicFunctionInterface;
 
-				self.fetch = function(resource, options) {
-					return legacyFetch(new URL(resource, import.meta.url).href, options);
-				}
 				return await ("\0workerFn\0")(...data.workerArgs);
 			})());
+
 			self.postMessage({ pFIIndex: Object.keys(publicFunctionInterface), sudoKey })
 		};
 		if("task" in data) {

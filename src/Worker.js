@@ -26,10 +26,10 @@ export class WorkioWorker {
 					workerTemp.toString()
 						.replace(/"\\0workerFn\\0"/, "(" + workerFn.toString() + ")")
 						.replace(/\\0sudoKey\\0/, sudoKey)
-						.replace(/\\0origin\\0/, (() => {
+						.replace(/\\0base\\0/, (() => {
 							switch(runtimeKey) {
 								case "other":
-									return window.location.origin;
+									return window.location.href;
 							}
 						})())
 				})()`), { type: "module", eval: true }
