@@ -39,41 +39,26 @@ export async function workerTemp() {
 
 		close: () => self.env.op_close,
 
-		// fetch: ((superFn) => function() {
-		// 	arguments[0] = new URL(arguments[0], import.meta.url)
-		// 	return superFn.apply(this, arguments);
-		// })(self.fetch),
+		fetch: ((superFn) => function() {
+			arguments[0] = new URL(arguments[0], import.meta.url)
+			return superFn.apply(this, arguments);
+		})(self.fetch),
 
 	});
 
+	if("XMLHttpRequest" in globalThis) {
+		XMLHttpRequest.prototype.open = ((superFn) => function() {
+			arguments[1] = new URL(arguments[1], import.meta.url)
+			return superFn.apply(this, arguments);
+		})(XMLHttpRequest.prototype.open);
+	};
 	
 	let
 		sudoKey = "\0sudoKey\0",
-		publicFunctionInterface = {};
-
-	import.meta.url = "\0base\0";
-
-	// self.fetch = ((superFn) => function() {
-	// 	arguments[0] = new URL(arguments[0], import.meta.url)
-	// 	return superFn.apply(this, arguments);
-	// })(self.fetch);
-
-	self.addEventListener("message", async ({ data }) => {
-		if(data.workerArgs) {
-			Object.assign(publicFunctionInterface, await (async function() {
-				let
-					sudoKey = undefined,
-					publicFunctionInterface = undefined;
-
-				sudoKey;
-				publicFunctionInterface;
-
-				return await ("\0workerFn\0")(...data.workerArgs);
-			})());
-
-			self.postMessage({ pFIIndex: Object.keys(publicFunctionInterface), sudoKey })
-		};
-		if("task" in data) {
+		publicFunctionInterface = {},
+		initialized = false,
+		pendingTask = [],
+		processTask = async function(data) {
 			if(data.task in publicFunctionInterface) {
 				const returnValue = await publicFunctionInterface[data.task](...data.args);
 				self.postMessage({
@@ -101,6 +86,34 @@ export async function workerTemp() {
 					taskId: data.taskId,
 				})
 			}
+		};
+
+	import.meta.url = "\0base\0";
+
+	self.addEventListener("message", async ({ data }) => {
+		if(data.workerArgs) {
+			Object.assign(publicFunctionInterface, await (async function() {
+				let
+					sudoKey = undefined,
+					publicFunctionInterface = undefined,
+					pendingTask = undefined,
+					processTask = undefined;
+
+				sudoKey;
+				publicFunctionInterface;
+				pendingTask;
+				processTask;
+
+				return await ("\0workerFn\0")(...data.workerArgs);
+			})());
+
+			initialized = true;
+			pendingTask.forEach(index => processTask(index));
+			pendingTask = [];
+		};
+
+		if("task" in data) {
+			initialized? processTask(data) : pendingTask.push(data)
 		}
 	}, { passive: true });
 
