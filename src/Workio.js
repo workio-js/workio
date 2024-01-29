@@ -1,8 +1,8 @@
 const
 	{ WorkioWorker } = await import("./Worker.js"),
 	{ WorkioFunction } = await import("./Function.js"),
-	{ runtimeKey } = await import("./RuntimeKey.js"),
-	{ constConfig } = await import("./ConstConfig.js");
+	{ runtimeKey } = await import("./util/RuntimeKey.js"),
+	{ constConfig } = await import("./util/ConstConfig.js");
 
 class Workio {
 
@@ -24,8 +24,6 @@ class Workio {
 				throw new TypeError("first argument must be a type of function");
 
 			default: {
-				const
-					constructorConfig = constConfig(config? config : {});
 
 				return function WorkioInitializer(...workerArgs) {
 

@@ -1,6 +1,6 @@
 const
-	{ scriptURL } = await import("./util/ScriptURL.js"),
-	{ TaskPool } = await import("./util/TaskPool.js"),
+	{ scriptURL } = await import("./core/ScriptURL.js"),
+	{ TaskPool } = await import("./core/TaskPool.js"),
 	{ runtimeKey } = await import("./util/RuntimeKey.js"),
 	{ random64 } = await import("./util/Random64.js"),
 	{ workerTemp } = await import("./template/WorkerTemp.js");
@@ -18,7 +18,6 @@ export class WorkioWorker {
 	constructor({ workerFn, constructorConfig, workerArgs }) {
 
 		const
-			pFIIndex = {},
 			sudoKey = random64(),
 			personalTaskPool = new TaskPool(),
 			workerInstance = new Worker(
@@ -30,6 +29,8 @@ export class WorkioWorker {
 							switch(runtimeKey) {
 								case "other":
 									return window.location.href;
+								case "deno":
+									return Deno.cwd();
 							}
 						})())
 				})()`), { type: "module", eval: true }
@@ -49,9 +50,6 @@ export class WorkioWorker {
 						}
 						if(data.methodNotFound) {
 							personalTaskPool.rejectResponse(data)
-						}
-						if(data.pFIIndex) {
-							Object.assign(pFIIndex, data.pFIIndex);
 						}
 				}
 			}

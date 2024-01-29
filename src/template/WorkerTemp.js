@@ -4,19 +4,6 @@ export async function workerTemp() {
 		constructor() { }
 	}
 
-	class WorkioPort {
-		constructor() {
-
-		}
-	}
-
-	class Op extends Promise {
-		constructor({ taskId }) { 
-			super((resolve, reject) => Object.assign(this, { promises: { resolve, reject } }, arguments));
-			self.postMessage()
-		}
-	}
-
 	Object.defineProperties(self, {
 		env: {
 			value: Object.defineProperties({}, {
@@ -40,7 +27,7 @@ export async function workerTemp() {
 		close: () => self.env.op_close,
 
 		fetch: ((superFn) => function() {
-			arguments[0] = new URL(arguments[0], import.meta.url)
+			arguments[0] = new URL(arguments[0], import.meta.url);
 			return superFn.apply(this, arguments);
 		})(self.fetch),
 
@@ -48,7 +35,7 @@ export async function workerTemp() {
 
 	if("XMLHttpRequest" in globalThis) {
 		XMLHttpRequest.prototype.open = ((superFn) => function() {
-			arguments[1] = new URL(arguments[1], import.meta.url)
+			arguments[1] = new URL(arguments[1], import.meta.url);
 			return superFn.apply(this, arguments);
 		})(XMLHttpRequest.prototype.open);
 	};
@@ -104,7 +91,7 @@ export async function workerTemp() {
 				pendingTask;
 				processTask;
 
-				return await ("\0workerFn\0")(...data.workerArgs);
+				return await ("\0workerFn\0")(...data.workerArgs)
 			})());
 
 			initialized = true;

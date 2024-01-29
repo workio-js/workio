@@ -1,0 +1,11 @@
+{
+  "name": "workio",
+  "version": "0.0.9",
+  "description": "The Web Worker Framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ihasq",
+  "license": "MIT"
+}

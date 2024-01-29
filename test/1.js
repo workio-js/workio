@@ -1,10 +1,10 @@
-const { Workio } = await import("../build/mod.js");
+const { Workio } = await import("../src/Workio.js");
 
 const ExampleWorker = new Workio(async ({ max }) => {
 
-	const res = await fetch("./index.html");
-	const text = await res.text();
-	console.log(text);
+	// const res = await fetch("./test.js");
+	// const text = await res.text();
+	// console.log(text);
 
 	function calc(length) {
 		let buffer = 0;
