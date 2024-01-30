@@ -1,5 +1,7 @@
 export async function workerTemp() {
 
+	import.meta.url = "\0base\0";
+
 	class WorkioOp {
 		constructor() { }
 	}
@@ -75,32 +77,32 @@ export async function workerTemp() {
 			}
 		};
 
-	import.meta.url = "\0base\0";
-
 	self.addEventListener("message", async ({ data }) => {
-		if(data.workerArgs) {
-			Object.assign(publicFunctionInterface, await (async function() {
-				let
-					sudoKey = undefined,
-					publicFunctionInterface = undefined,
-					pendingTask = undefined,
-					processTask = undefined;
+		if(data.sudoKey === sudoKey) {
+			if(data.workerArgs) {
+				Object.assign(publicFunctionInterface, await (async function() {
+					let
+						sudoKey = undefined,
+						publicFunctionInterface = undefined,
+						pendingTask = undefined,
+						processTask = undefined;
+	
+					sudoKey;
+					publicFunctionInterface;
+					pendingTask;
+					processTask;
+	
+					return await ("\0workerFn\0")(...data.workerArgs)
+				})());
+	
+				initialized = true;
+				pendingTask.forEach(index => processTask(index));
+				pendingTask = [];
+			}
 
-				sudoKey;
-				publicFunctionInterface;
-				pendingTask;
-				processTask;
-
-				return await ("\0workerFn\0")(...data.workerArgs)
-			})());
-
-			initialized = true;
-			pendingTask.forEach(index => processTask(index));
-			pendingTask = [];
-		};
-
-		if("task" in data) {
-			initialized? processTask(data) : pendingTask.push(data)
+			if("task" in data) {
+				initialized? processTask(data) : pendingTask.push(data)
+			}
 		}
 	}, { passive: true });
 

@@ -23,7 +23,6 @@ export class WorkioWorker {
 			workerInstance = new Worker(
 				scriptURL(`(${
 					workerTemp.toString()
-						.replace(/"\\0workerFn\\0"/, "(" + workerFn.toString() + ")")
 						.replace(/\\0sudoKey\\0/, sudoKey)
 						.replace(/\\0base\\0/, (() => {
 							switch(runtimeKey) {
@@ -33,6 +32,7 @@ export class WorkioWorker {
 									return Deno.cwd();
 							}
 						})())
+						.replace(/"\\0workerFn\\0"/, "(" + workerFn.toString() + ")")
 				})()`), { type: "module", eval: true }
 			);
 
@@ -60,6 +60,7 @@ export class WorkioWorker {
 				return function() {
 					return new Promise((resolve, reject) => {
 						workerInstance.postMessage({
+							sudoKey,
 							task: prop,
 							args: [...arguments],
 							taskId: personalTaskPool.push({ resolve, reject })
