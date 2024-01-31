@@ -45,36 +45,37 @@ export async function workerTemp() {
 		publicFunctionInterface = {},
 		initialized = false,
 		pendingTask = [],
-		processTask = async function (data) {
-			if (data.task in publicFunctionInterface) {
-				const returnValue = await publicFunctionInterface[data.task](...data.args);
-				self.postMessage(
-					{
-						sudoKey,
-						returnValue,
-						taskId: data.taskId,
-						close: (returnValue === self.env.op_close),
-					},
-					returnValue instanceof (
-							ArrayBuffer ||
-							MessagePort ||
-							ReadableStream ||
-							WritableStream ||
-							TransformStream ||
-							AudioData ||
-							ImageBitmap ||
-							VideoFrame ||
-							OffscreenCanvas ||
-							RTCDataChannel
-						)
-						? [returnValue]
-						: null,
-				);
+		processTask = async function ({ task, args, taskId }) {
+			if (task in publicFunctionInterface) {
+				((returnValue) => {
+					self.postMessage(
+						{
+							sudoKey,
+							returnValue,
+							taskId,
+							close: (returnValue === self.env.op_close),
+						},
+						returnValue instanceof (
+								ArrayBuffer ||
+								MessagePort ||
+								ReadableStream ||
+								WritableStream ||
+								TransformStream ||
+								AudioData ||
+								ImageBitmap ||
+								VideoFrame ||
+								OffscreenCanvas ||
+								RTCDataChannel
+							)
+							? [returnValue]
+							: null,
+					);
+				})(await publicFunctionInterface[task](...args))
 			} else {
 				self.postMessage({
 					sudoKey,
 					methodNotFound: true,
-					taskId: data.taskId,
+					taskId,
 				});
 			}
 		};

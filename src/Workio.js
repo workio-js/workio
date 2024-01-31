@@ -13,11 +13,13 @@ class Workio {
 
 	constructor(workerFn, config) {
 		switch (false) {
-			case new.target:
+			case new.target: {
 				throw new Error('calling Workio constructor without new is invalid');
+			}
 
-			case workerFn instanceof Function:
+			case workerFn instanceof Function: {
 				throw new TypeError('first argument must be a type of function');
+			}
 
 			default: {
 				return function WorkioInitializer(...workerArgs) {

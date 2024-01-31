@@ -21,8 +21,9 @@ const mod = (await esbuild.build({
 	write: false,
 	bundle: true,
 	format: "esm",
-})).outputFiles[0].text
-await Deno.writeTextFile("./build/mod.js", mod)
+})).outputFiles[0].text.replace(/"/g, "'");
+
+await Deno.writeTextFile("./build/mod.js", mod);
 
 const min = (await esbuild.build({
 	plugins: [denoPlugin()],
@@ -31,8 +32,8 @@ const min = (await esbuild.build({
 	bundle: true,
 	minify: true,
 	format: "esm",
-})).outputFiles[0].text
+})).outputFiles[0].text.replace(/"/g, "'");
 
-await Deno.writeTextFile("./build/min.js", min)
+await Deno.writeTextFile("./build/min.js", min);
 
-esbuild.stop()
+esbuild.stop();

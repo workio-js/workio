@@ -30,7 +30,7 @@ export class WorkioWorker {
 								}
 							})(),
 						)
-						.replace(/"\\0workerFn\\0"/, '(' + workerFn.toString() + ')')
+						.replace(/'\\0workerFn\\0'/, '(' + workerFn.toString() + ')')
 				})()`),
 				{ type: 'module', eval: true },
 			);
