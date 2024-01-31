@@ -70,7 +70,7 @@ export async function workerTemp() {
 							? [returnValue]
 							: null,
 					);
-				})(await publicFunctionInterface[task](...args))
+				})(await publicFunctionInterface[task](...args));
 			} else {
 				self.postMessage({
 					sudoKey,

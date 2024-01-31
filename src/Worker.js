@@ -21,14 +21,11 @@ export class WorkioWorker {
 						.replace(/\\0sudoKey\\0/, sudoKey)
 						.replace(
 							/\\0base\\0/,
-							(() => {
-								switch (runtimeKey) {
-									case 'other':
-										return window.location.href;
-									case 'deno':
-										return Deno.cwd();
-								}
-							})(),
+							runtimeKey === 'other'
+								? window.location.href
+								: runtimeKey === 'deno'
+								? Deno.cwd()
+								: undefined,
 						)
 						.replace(/'\\0workerFn\\0'/, '(' + workerFn.toString() + ')')
 				})()`),

@@ -180,14 +180,7 @@ var init_Worker = __esm(async () => {
   ({workerTemp: workerTemp2} = await Promise.resolve().then(() => (init_WorkerTemp(), WorkerTemp_exports)));
   WorkioWorker = class {
     constructor({workerFn, constructorConfig, workerArgs}) {
-      const sudoKey = random642(), personalTaskPool = new TaskPool2(), workerInstance = new Worker(scriptURL2(`(${workerTemp2.toString().replace(/\\0sudoKey\\0/, sudoKey).replace(/\\0base\\0/, (() => {
-        switch (runtimeKey3) {
-          case 'other':
-            return window.location.href;
-          case 'deno':
-            return Deno.cwd();
-        }
-      })()).replace(/'\\0workerFn\\0'/, '(' + workerFn.toString() + ')')})()`), {type: 'module', eval: true});
+      const sudoKey = random642(), personalTaskPool = new TaskPool2(), workerInstance = new Worker(scriptURL2(`(${workerTemp2.toString().replace(/\\0sudoKey\\0/, sudoKey).replace(/\\0base\\0/, runtimeKey3 === 'other' ? window.location.href : runtimeKey3 === 'deno' ? Deno.cwd() : void 0).replace(/'\\0workerFn\\0'/, '(' + workerFn.toString() + ')')})()`), {type: 'module', eval: true});
       workerInstance.postMessage({workerArgs, sudoKey});
       workerInstance[runtimeKey3 === 'node' ? 'on' : 'addEventListener']('message', ({data}) => {
         if (data.sudoKey) {
