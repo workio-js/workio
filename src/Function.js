@@ -1,10 +1,10 @@
-import { TaskPool } from "./core/TaskPool.js";
-import { scriptURL } from "./core/ScriptURL.js";
-import { runtimeKey } from "./util/RuntimeKey.js";
+import { TaskPool } from './core/TaskPool.js';
+import { scriptURL } from './core/ScriptURL.js';
+import { runtimeKey } from './util/RuntimeKey.js';
 
 export class WorkioFunction {
 	/**
-	 * @param { Function } workerFn 
+	 * @param { Function } workerFn
 	 */
 	constructor({ resolve, workerFn, workerArgs }) {
 		// const scriptURL = getScriptURL(`

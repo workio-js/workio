@@ -1,0 +1,40 @@
+{
+	"tasks": {
+		"build": "deno run -A ./script/build.js",
+		"release": "deno run -A ./script/release.js",
+		"run": "deno run ./test/1.js",
+		"run-web": "npx serve"
+	},
+	"lint": {
+		"files": {
+			"include": [
+				"src"
+			]
+		},
+		"rules": {
+			"tags": ["recommended"],
+			"exclude": [
+				"no-unused-vars",
+				"no-implicit-any",
+				"no-explicit-any",
+				"require-await",
+				"ban-ts-comment"
+			]
+		}
+	},
+	"fmt": {
+		"files": {
+			"include": [
+				"src",
+				"deno.jsonc"
+			],
+			"exclude": ["node_modules"]
+		},
+		"options": {
+			"useTabs": true,
+			"lineWidth": 100,
+			"indentWidth": 4,
+			"singleQuote": true
+		}
+	}
+}

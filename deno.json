@@ -1,8 +1,0 @@
-{
-	"tasks": {
-		"build": "deno run -A ./script/build.js",
-		"release": "deno run -A ./script/release.js",
-		"run": "deno run ./test/1.js",
-		"run-web": "npx serve"
-	}
-}

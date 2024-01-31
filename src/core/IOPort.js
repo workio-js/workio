@@ -5,17 +5,15 @@ export class IOPort {
 		this.beforeInitializationRequests = [];
 	}
 	serialize({ data }) {
-
 	}
 	initialize({ data }) {
-		this.beforeInitializationRequests.forEach(data => this.request({ data }))
+		this.beforeInitializationRequests.forEach((data) => this.request({ data }));
 		this.isInitialized = true;
 	}
 	request({ data }) {
 		return new Promise((resolve, reject) => {
-			if(!this.isInitialized) {
-				
+			if (!this.isInitialized) {
 			}
-		})
+		});
 	}
 }
