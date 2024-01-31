@@ -21,18 +21,6 @@ export async function workerTemp() {
 		},
 	});
 
-	Object.assign(self, {
-		window: self,
-
-		close: () => self.env.op_close,
-
-		fetch: ((superFn) =>
-			function () {
-				arguments[0] = new URL(arguments[0], import.meta.url);
-				return superFn.apply(this, arguments);
-			})(self.fetch),
-	});
-
 	if ('XMLHttpRequest' in globalThis) {
 		XMLHttpRequest.prototype.open = ((superFn) =>
 			function () {
@@ -42,6 +30,7 @@ export async function workerTemp() {
 	}
 
 	let sudoKey = '\0sudoKey\0',
+		runtimeKey = '\0runtimeKey\0',
 		publicFunctionInterface = {},
 		initialized = false,
 		pendingTask = [],
@@ -79,6 +68,22 @@ export async function workerTemp() {
 				});
 			}
 		};
+
+	Object.assign(self, {
+		window: self,
+
+		close: () => self.env.op_close,
+
+		fetch: runtimeKey === 'other'
+			? ((superFn) =>
+				function () {
+					if (runtimeKey === 'other') {
+						arguments[0] = new URL(arguments[0], import.meta.url);
+					}
+					return superFn.apply(this, arguments);
+				})(self.fetch)
+			: self.fetch,
+	});
 
 	self.addEventListener('message', async ({ data }) => {
 		if (data.sudoKey === sudoKey) {

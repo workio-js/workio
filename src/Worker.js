@@ -17,15 +17,13 @@ export class WorkioWorker {
 			personalTaskPool = new TaskPool(),
 			workerInstance = new Worker(
 				scriptURL(`(${
-					workerTemp.toString()
+					workerTemp
+						.toString()
 						.replace(/\\0sudoKey\\0/, sudoKey)
+						.replace(/\\0runtimeKey\\0/, runtimeKey)
 						.replace(
 							/\\0base\\0/,
-							runtimeKey === 'other'
-								? window.location.href
-								: runtimeKey === 'deno'
-								? Deno.cwd()
-								: undefined,
+							runtimeKey === 'other' ? window.location.href : undefined,
 						)
 						.replace(/'\\0workerFn\\0'/, '(' + workerFn.toString() + ')')
 				})()`),

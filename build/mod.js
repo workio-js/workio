@@ -110,21 +110,13 @@ async function workerTemp() {
       writable: false
     }
   });
-  Object.assign(self, {
-    window: self,
-    close: () => self.env.op_close,
-    fetch: ((superFn) => function() {
-      arguments[0] = new URL(arguments[0], import.meta.url);
-      return superFn.apply(this, arguments);
-    })(self.fetch)
-  });
   if ('XMLHttpRequest' in globalThis) {
     XMLHttpRequest.prototype.open = ((superFn) => function() {
       arguments[1] = new URL(arguments[1], import.meta.url);
       return superFn.apply(this, arguments);
     })(XMLHttpRequest.prototype.open);
   }
-  let sudoKey = '\0sudoKey\0', publicFunctionInterface = {}, initialized = false, pendingTask = [], processTask = async function({task, args, taskId}) {
+  let sudoKey = '\0sudoKey\0', runtimeKey5 = '\0runtimeKey\0', publicFunctionInterface = {}, initialized = false, pendingTask = [], processTask = async function({task, args, taskId}) {
     if (task in publicFunctionInterface) {
       ((returnValue) => {
         self.postMessage({
@@ -142,6 +134,16 @@ async function workerTemp() {
       });
     }
   };
+  Object.assign(self, {
+    window: self,
+    close: () => self.env.op_close,
+    fetch: runtimeKey5 === 'other' ? ((superFn) => function() {
+      if (runtimeKey5 === 'other') {
+        arguments[0] = new URL(arguments[0], import.meta.url);
+      }
+      return superFn.apply(this, arguments);
+    })(self.fetch) : self.fetch
+  });
   self.addEventListener('message', async ({data}) => {
     if (data.sudoKey === sudoKey) {
       if (data.workerArgs) {
@@ -180,7 +182,7 @@ var init_Worker = __esm(async () => {
   ({workerTemp: workerTemp2} = await Promise.resolve().then(() => (init_WorkerTemp(), WorkerTemp_exports)));
   WorkioWorker = class {
     constructor({workerFn, constructorConfig, workerArgs}) {
-      const sudoKey = random642(), personalTaskPool = new TaskPool2(), workerInstance = new Worker(scriptURL2(`(${workerTemp2.toString().replace(/\\0sudoKey\\0/, sudoKey).replace(/\\0base\\0/, runtimeKey3 === 'other' ? window.location.href : runtimeKey3 === 'deno' ? Deno.cwd() : void 0).replace(/'\\0workerFn\\0'/, '(' + workerFn.toString() + ')')})()`), {type: 'module', eval: true});
+      const sudoKey = random642(), personalTaskPool = new TaskPool2(), workerInstance = new Worker(scriptURL2(`(${workerTemp2.toString().replace(/\\0sudoKey\\0/, sudoKey).replace(/\\0runtimeKey\\0/, runtimeKey3).replace(/\\0base\\0/, runtimeKey3 === 'other' ? window.location.href : void 0).replace(/'\\0workerFn\\0'/, '(' + workerFn.toString() + ')')})()`), {type: 'module', eval: true});
       workerInstance.postMessage({workerArgs, sudoKey});
       workerInstance[runtimeKey3 === 'node' ? 'on' : 'addEventListener']('message', ({data}) => {
         if (data.sudoKey) {
