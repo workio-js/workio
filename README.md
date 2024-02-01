@@ -10,8 +10,8 @@
 
 Workio is a JavaScript library for building and managing Web Workers.
 - **Touch-and-Go:** No more worker.js to build additional off-thread operations. offload to comfortable worker threads with single line.
-- **Promise-based:** 
 - **I/O Optimization:** Caching is available for large primitives.
+- **Promise-based:** 
 
 [Visit StackBlitz for your first step into the developer experience at Workio.](https://stackblitz.com/edit/web-platform-hceprw?file=script.js)  
 
