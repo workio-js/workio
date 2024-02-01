@@ -26,9 +26,3 @@ const instance = new ExampleWorker({ max: 1e9 });
 console.log(await instance.calc(1e9));
 
 await instance.close();
-
-const document = new DOMProxy(document)
-
-document.body.innerHTML = `
-	<div>${Date.now()}</div>
-`
