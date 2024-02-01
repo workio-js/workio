@@ -1,7 +1,7 @@
-const { WorkioWorker } = await import('./Worker.js'),
-	{ WorkioFunction } = await import('./Function.js'),
-	{ runtimeKey } = await import('./util/RuntimeKey.js'),
-	{ constConfig } = await import('./util/ConstConfig.js');
+import { WorkioWorker } from './Worker.js';
+import { WorkioFunction } from './Function.js';
+import { runtimeKey } from './util/RuntimeKey.js';
+import { constConfig } from './util/ConstConfig.js';
 
 class Workio {
 	/**
@@ -23,11 +23,11 @@ class Workio {
 
 			default: {
 				return function WorkioInitializer(...workerArgs) {
-					return (new.target
+					return new.target
 						? new WorkioWorker({ workerFn, workerArgs })
 						: new Promise((resolve) =>
 							new WorkioFunction({ resolve, workerFn, workerArgs })
-						));
+						);
 				};
 			}
 		}

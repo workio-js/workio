@@ -1,6 +1,15 @@
 export async function workerTemp() {
 	import.meta.url = '\0base\0';
 
+	let runtimeKey = '\0runtimeKey\0';
+
+	if (runtimeKey === 'node') {
+		const { parentPort } = require('node:worker_threads');
+		Object.assign(self, {
+			postMessage: parentPort.postMessage,
+		});
+	}
+
 	class WorkioOp {
 		constructor() {}
 	}
@@ -22,19 +31,20 @@ export async function workerTemp() {
 	});
 
 	if ('XMLHttpRequest' in globalThis) {
-		XMLHttpRequest.prototype.open = ((superFn) =>
-			function () {
-				arguments[1] = new URL(arguments[1], import.meta.url);
-				return superFn.apply(this, arguments);
-			})(XMLHttpRequest.prototype.open);
+		XMLHttpRequest.prototype.open = (
+			(superFn) =>
+				function () {
+					arguments[1] = new URL(arguments[1], import.meta.url);
+					return superFn.apply(this, arguments);
+				}
+		)(XMLHttpRequest.prototype.open);
 	}
 
 	let sudoKey = '\0sudoKey\0',
-		runtimeKey = '\0runtimeKey\0',
 		publicFunctionInterface = {},
 		initialized = false,
 		pendingTask = [],
-		processTask = async function ({ task, args, taskId }) {
+		processTask = async ({ task, args, taskId }) => {
 			if (task in publicFunctionInterface) {
 				((returnValue) => {
 					self.postMessage(

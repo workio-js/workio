@@ -1,10 +1,12 @@
-const { Workio } = await import("../src/Workio.js");
+import { Workio } from "../src/Workio.js";
 
 const ExampleWorker = new Workio(async ({ max }) => {
 
-	const res = await fetch("file:///home/ihasq/code/workio/test/test.js");
-	const text = await res.text();
-	console.log(text);
+	// const res = await fetch("file:///home/ihasq/code/workio/test/test.js");
+	// const text = await res.text();
+	// console.log(text);
+
+	console.log(sudoKey)
 
 	function calc(length) {
 		let buffer = 0;

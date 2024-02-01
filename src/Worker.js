@@ -1,10 +1,8 @@
-const { scriptURL } = await import('./core/ScriptURL.js'),
-	{ TaskPool } = await import('./core/TaskPool.js'),
-	{ runtimeKey } = await import('./util/RuntimeKey.js'),
-	{ random64 } = await import('./util/Random64.js'),
-	{ workerTemp } = await import('./template/WorkerTemp.js');
-
-// const { Worker } = await import("node:worker_threads");
+import { scriptURL } from './core/ScriptURL.js';
+import { TaskPool } from './core/TaskPool.js';
+import { runtimeKey } from './util/RuntimeKey.js';
+import { random64 } from './util/Random64.js';
+import { workerTemp } from './template/WorkerTemp.js';
 
 export class WorkioWorker {
 	/**

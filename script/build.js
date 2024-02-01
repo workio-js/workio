@@ -25,6 +25,16 @@ const mod = (await esbuild.build({
 
 await Deno.writeTextFile("./build/mod.js", mod);
 
+const common = (await esbuild.build({
+	plugins: [denoPlugin()],
+	entryPoints: ["./build/mod.js"],
+	write: false,
+	bundle: true,
+	format: "cjs",
+})).outputFiles[0].text.replace(/"/g, "'");
+
+await Deno.writeTextFile("./build/common.js", common);
+
 const min = (await esbuild.build({
 	plugins: [denoPlugin()],
 	entryPoints: ["./src/Workio.js"],

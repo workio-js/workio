@@ -1,12 +1,20 @@
-// src/util/RuntimeKey.js
-var runtimeKey = globalThis?.process?.release?.name === 'node' ? 'node' : globalThis?.Deno !== void 0 ? 'deno' : globalThis?.Bun !== void 0 ? 'bun' : globalThis?.fastly !== void 0 ? 'fastly' : globalThis?.__lagon__ !== void 0 ? 'lagon' : globalThis?.WebSocketPair instanceof Function ? 'workerd' : globalThis?.EdgeRuntime instanceof String ? 'edge-light' : 'other';
+var __defProp = Object.defineProperty;
+var __markAsModule = (target) => __defProp(target, '__esModule', {value: true});
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, {get: all[name], enumerable: true});
+};
 
-// src/core/ScriptURL.js
+// build/mod.js
+__markAsModule(exports);
+__export(exports, {
+  Workio: () => Workio
+});
+var import_meta = {};
+var runtimeKey = globalThis?.process?.release?.name === 'node' ? 'node' : globalThis?.Deno !== void 0 ? 'deno' : globalThis?.Bun !== void 0 ? 'bun' : globalThis?.fastly !== void 0 ? 'fastly' : globalThis?.__lagon__ !== void 0 ? 'lagon' : globalThis?.WebSocketPair instanceof Function ? 'workerd' : globalThis?.EdgeRuntime instanceof String ? 'edge-light' : 'other';
 function scriptURL(scriptStr) {
   return runtimeKey === 'node' ? scriptStr : URL.createObjectURL(new Blob([scriptStr], {type: 'application/javascript'}));
 }
-
-// src/core/TaskPool.js
 var TaskPool = class {
   constructor() {
     this.pool = {};
@@ -43,15 +51,11 @@ var TaskPool = class {
     }
   }
 };
-
-// src/util/Random64.js
 function random64() {
   return btoa(String.fromCharCode.apply(null, crypto.getRandomValues(new Uint8Array(64))));
 }
-
-// src/template/WorkerTemp.js
 async function workerTemp() {
-  import.meta.url = '\0base\0';
+  import_meta.url = '\0base\0';
   class WorkioOp {
     constructor() {
     }
@@ -73,7 +77,7 @@ async function workerTemp() {
   });
   if ('XMLHttpRequest' in globalThis) {
     XMLHttpRequest.prototype.open = ((superFn) => function() {
-      arguments[1] = new URL(arguments[1], import.meta.url);
+      arguments[1] = new URL(arguments[1], import_meta.url);
       return superFn.apply(this, arguments);
     })(XMLHttpRequest.prototype.open);
   }
@@ -100,7 +104,7 @@ async function workerTemp() {
     close: () => self.env.op_close,
     fetch: runtimeKey2 === 'other' ? ((superFn) => function() {
       if (runtimeKey2 === 'other') {
-        arguments[0] = new URL(arguments[0], import.meta.url);
+        arguments[0] = new URL(arguments[0], import_meta.url);
       }
       return superFn.apply(this, arguments);
     })(self.fetch) : self.fetch
@@ -126,8 +130,6 @@ async function workerTemp() {
     }
   }, {passive: true});
 }
-
-// src/Worker.js
 var WorkioWorker = class {
   constructor({workerFn, constructorConfig, workerArgs}) {
     const sudoKey = random64(), personalTaskPool = new TaskPool(), workerInstance = new Worker(scriptURL(`(${workerTemp.toString().replace(/\\0sudoKey\\0/, sudoKey).replace(/\\0runtimeKey\\0/, runtimeKey).replace(/\\0base\\0/, runtimeKey === 'other' ? window.location.href : void 0).replace(/'\\0workerFn\\0'/, '(' + workerFn.toString() + ')')})()`), {type: 'module', eval: true});
@@ -164,14 +166,10 @@ var WorkioWorker = class {
     });
   }
 };
-
-// src/Function.js
 var WorkioFunction = class {
   constructor({resolve, workerFn, workerArgs}) {
   }
 };
-
-// src/Workio.js
 var Workio = class {
   constructor(workerFn, config) {
     switch (false) {
@@ -190,7 +188,4 @@ var Workio = class {
   }
   static config(options) {
   }
-};
-export {
-  Workio
 };
