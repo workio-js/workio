@@ -1,7 +1,5 @@
 import { WorkioWorker } from './Worker.js';
 import { WorkioFunction } from './Function.js';
-import { runtimeKey } from './util/RuntimeKey.js';
-import { constConfig } from './util/ConstConfig.js';
 
 class Workio {
 	/**
@@ -14,10 +12,8 @@ class Workio {
 	constructor(workerFn, config) {
 		switch (false) {
 			case new.target:
-				throw new Error('calling Workio constructor without new is invalid');
-
 			case workerFn instanceof Function:
-				throw new TypeError('first argument must be a type of function');
+				return undefined;
 
 			default:
 				return function WorkioInitializer(...workerArgs) {
