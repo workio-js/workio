@@ -13,33 +13,21 @@ class Workio {
 
 	constructor(workerFn, config) {
 		switch (false) {
-			case new.target: {
+			case new.target:
 				throw new Error('calling Workio constructor without new is invalid');
-			}
 
-			case workerFn instanceof Function: {
+			case workerFn instanceof Function:
 				throw new TypeError('first argument must be a type of function');
-			}
 
-			default: {
+			default:
 				return function WorkioInitializer(...workerArgs) {
-					return new.target
+					return (new.target)
 						? new WorkioWorker({ workerFn, workerArgs })
 						: new Promise((resolve) =>
 							new WorkioFunction({ resolve, workerFn, workerArgs })
 						);
 				};
-			}
 		}
-	}
-
-	/**
-	 * @param { Object } options
-	 * @param { Boolean } [options.debug]
-	 * @param { Number } [options.maxFunctionPending]
-	 */
-
-	static config(options) {
 	}
 }
 
