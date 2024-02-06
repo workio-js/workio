@@ -6,7 +6,7 @@ class Workio {
 	 * @param { Function } workerFn Describes function which executed on worker thread.
 	 *
 	 * @param { Object } [config]
-	 * @param { String } [config.shared]
+	 * @param { Boolean } [config.multiplex]
 	 */
 
 	constructor(workerFn, config) {

@@ -1,48 +1,9 @@
 export async function workerTemp() {
 	import.meta.url = '\0base\0';
 
-	let runtimeKey = '\0runtimeKey\0';
-
-	if (runtimeKey === 'node') {
-		const { parentPort } = require('node:worker_threads');
-		Object.assign(self, {
-			postMessage: parentPort.postMessage,
-		});
-	}
-
-	class WorkioOp {
-		constructor() {}
-	}
-
-	Object.defineProperties(self, {
-		env: {
-			value: Object.defineProperties({}, {
-				type: {
-					value: 'function',
-					writable: false,
-				},
-				op_close: {
-					value: new WorkioOp(),
-					writable: false,
-				},
-			}),
-			writable: false,
-		},
-	});
-
-	if ('XMLHttpRequest' in globalThis) {
-		XMLHttpRequest.prototype.open = (
-			(superFn) =>
-				function () {
-					arguments[1] = new URL(arguments[1], import.meta.url);
-					return superFn.apply(this, arguments);
-				}
-		)(XMLHttpRequest.prototype.open);
-	}
-
-	let sudoKey = '\0sudoKey\0',
+	let runtimeKey = '\0runtimeKey\0',
+		sudoKey = '\0sudoKey\0',
 		publicFunctionInterface = {},
-		initialized = false,
 		pendingTask = [],
 		processTask = async ({ task, args, taskId }) => {
 			if (task in publicFunctionInterface) {
@@ -77,7 +38,35 @@ export async function workerTemp() {
 					taskId,
 				});
 			}
-		};
+		},
+		initialized = false;
+
+	if (runtimeKey === 'node') {
+		const { parentPort } = require('node:worker_threads');
+		Object.assign(self, {
+			postMessage: parentPort.postMessage,
+		});
+	}
+
+	class WorkioOp {
+		constructor() {}
+	}
+
+	Object.defineProperties(self, {
+		env: {
+			value: Object.defineProperties({}, {
+				type: {
+					value: 'function',
+					writable: false,
+				},
+				op_close: {
+					value: new WorkioOp(),
+					writable: false,
+				},
+			}),
+			writable: false,
+		},
+	});
 
 	Object.assign(self, {
 		window: self,
@@ -100,18 +89,22 @@ export async function workerTemp() {
 			if (data.workerArgs) {
 				Object.assign(
 					publicFunctionInterface,
-					await (async function () {
-						let sudoKey = undefined,
+					await (function () {
+						let runtimeKey = undefined,
+							sudoKey = undefined,
 							publicFunctionInterface = undefined,
 							pendingTask = undefined,
-							processTask = undefined;
+							processTask = undefined,
+							initialized = undefined;
 
+						runtimeKey;
 						sudoKey;
 						publicFunctionInterface;
 						pendingTask;
 						processTask;
+						initialized;
 
-						return await ('\0workerFn\0')(...data.workerArgs);
+						return ('\0workerFn\0')(...data.workerArgs);
 					})(),
 				);
 
