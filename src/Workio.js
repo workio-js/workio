@@ -1,7 +1,7 @@
 import { WorkioWorker } from './Worker.js';
 import { WorkioFunction } from './Function.js';
 
-class Workio {
+export class Workio {
 	/**
 	 * @param { Function } workerFn Describes function which executed on worker thread.
 	 *
@@ -26,5 +26,3 @@ class Workio {
 		}
 	}
 }
-
-export { Workio };
