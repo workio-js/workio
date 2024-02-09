@@ -30,13 +30,6 @@ import { runtimeKey } from './util/RuntimeKey.js';
 // 	}
 // }
 
-class IOInterface extends MessageChannel {
-	constructor() {
-		super();
-		this.destination = super.port2;
-	}
-}
-
 export class Workio {
 	/**
 	 * @param { Function } workerFn
@@ -111,6 +104,7 @@ export class Workio {
 							} else {
 								rejectInit();
 							}
+							workerInstance.terminate();
 						}
 					}, { once: true, passive: true });
 				}

@@ -8,8 +8,7 @@
 	"lint": {
 		"files": {
 			"include": [
-				"src",
-				"testfiles"
+				"src"
 			]
 		},
 		"rules": {
@@ -26,7 +25,7 @@
 	"fmt": {
 		"files": {
 			"include": [
-				"workio",
+				"src",
 				"deno.jsonc",
 				"testfiles"
 			],
