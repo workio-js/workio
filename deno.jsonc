@@ -26,7 +26,7 @@
 	"fmt": {
 		"files": {
 			"include": [
-				"src",
+				"workio",
 				"deno.jsonc",
 				"testfiles"
 			],

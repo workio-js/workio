@@ -20,33 +20,33 @@ features:
   - icon: ⚡
     title: Lightning Fast
     details: Our abstraction algorithms make sending and receiving even faster.
-    link: /docs/getting-started
+    link: /get-started
   - icon: 🍀
     title: Adaptive Balancing
     details: Avoid residing inactive workers and suppress excessive thread consumption.
-    link: /docs/getting-started
+    link: /get-started
   - icon: ✍
     title: Inline Everything
     details: No more worker.js, stay focus on single JavaScript.
-    link: /docs/getting-started
+    link: /get-started
   - icon: 🗜️
     title: Bundle Friendly
     details: No additional bundler configuration. Fully works as default.
-    link: /docs/getting-started
+    link: /get-started
   - icon: 🌎
     title: Universal Performance
     details: Works from browser to edge runtimes widely with polyfills.
-    link: /docs/getting-started
+    link: /get-started
   - icon: 🏓
     title: Promise-based
     details: Fully-managed resolve manager brings perfect asynchronus I/O.
-    link: /docs/getting-started
+    link: /get-started
   - icon: 🔧
     title: Flexible Design
     details: Worker with constructor arguments. 
-    link: /docs/getting-started
+    link: /get-started
   - icon: 🚚
     title: Export Module
     details: Designed template can be published externally as an ES module.
-    link: /docs/getting-started
+    link: /get-started
 ---
