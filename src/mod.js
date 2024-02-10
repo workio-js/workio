@@ -62,7 +62,7 @@ export class Workio {
 
 								({
 									0({ methodList }) {
-										methodList.forEach((methodName) => {
+										methodList.forEach(function (methodName) {
 											methodObject[methodName] = function (...workerArgs) {
 												return new Promise(
 													function (resolveExec, rejectExec) {
@@ -110,17 +110,12 @@ export class Workio {
 						workerInstance.postMessage({
 							code: 2,
 							initArgs,
-							isInstance: false,
 
 							sudoKey,
 						});
 						workerInstance.addEventListener('message', function ({ data }) {
 							if (data.sudoKey === sudoKey) {
-								if (data.initSucceed) {
-									resolveInit(data.returnValue);
-								} else {
-									rejectInit();
-								}
+								resolveInit(data.returnValue);
 								workerInstance.terminate();
 							}
 						}, { passive: true });

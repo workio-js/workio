@@ -13,7 +13,14 @@ __export(exports, {
 var import_meta = {};
 async function workerTemp() {
   import_meta.url = '\0base\0';
-  let runtimeKey2 = '\0runtimeKey\0', sudoKey = '\0sudoKey\0', publicFunctionInterface = {};
+  let runtimeKey2 = '\0runtimeKey\0', sudoKey = '\0sudoKey\0', publicFunctionInterface = {}, execFn = async function() {
+    let runtimeKey3 = void 0, sudoKey2 = void 0, publicFunctionInterface2 = void 0, execFn2 = void 0;
+    runtimeKey3;
+    sudoKey2;
+    publicFunctionInterface2;
+    execFn2;
+    return await '\0workerFn\0'(...arguments[0]);
+  };
   class WorkioOp {
     constructor() {
     }
@@ -35,28 +42,23 @@ async function workerTemp() {
   });
   Object.assign(self, {
     window: self,
-    close: () => self.env.op_close,
-    fetch: runtimeKey2 === 'other' ? ((superFn) => function() {
-      if (runtimeKey2 === 'other') {
-        arguments[0] = new URL(arguments[0], import_meta.url);
-      }
-      return superFn.apply(this, arguments);
-    })(self.fetch) : self.fetch
+    close() {
+      return self.env.op_close;
+    },
+    fetch: runtimeKey2 === 'other' ? function(superFn) {
+      return function() {
+        if (runtimeKey2 === 'other') {
+          arguments[0] = new URL(arguments[0], import_meta.url);
+        }
+        return superFn.apply(this, arguments);
+      };
+    }(self.fetch) : self.fetch
   });
-  self.addEventListener('message', ({data}) => {
+  self.addEventListener('message', function({data}) {
     if (data.sudoKey === sudoKey) {
       ({
-        0({initArgs}) {
-          Object.assign(publicFunctionInterface, function() {
-            let runtimeKey3 = void 0, sudoKey2 = void 0, publicFunctionInterface2 = void 0, pendingTask = void 0, processTask = void 0, initialized = void 0;
-            runtimeKey3;
-            sudoKey2;
-            publicFunctionInterface2;
-            pendingTask;
-            processTask;
-            initialized;
-            return '\0workerFn\0'(...initArgs);
-          }());
+        async 0({initArgs}) {
+          Object.assign(publicFunctionInterface, await execFn(initArgs));
           self.postMessage({
             code: 0,
             sudoKey,
@@ -72,10 +74,10 @@ async function workerTemp() {
             });
             return;
           }
-          ((returnValue) => {
+          (function(returnValue) {
             if (returnValue === self.env.op_close) {
               self.postMessage({
-                code: 6,
+                code: 4,
                 taskId,
                 sudoKey
               });
@@ -88,6 +90,13 @@ async function workerTemp() {
               sudoKey
             }, returnValue instanceof (ArrayBuffer || MessagePort || ReadableStream || WritableStream || TransformStream || AudioData || ImageBitmap || VideoFrame || OffscreenCanvas || RTCDataChannel) ? [returnValue] : null);
           })(await publicFunctionInterface[methodName](...workerArgs));
+        },
+        async 2({initArgs, taskId}) {
+          self.postMessage({
+            taskId,
+            returnValue: await execFn(initArgs),
+            sudoKey
+          });
         }
       })[data.code](data);
     }
@@ -108,18 +117,18 @@ var TaskPool = class {
     this.nextId++;
     return currentId;
   }
-  setResponse({taskId, returnValue}) {
+  resolve({taskId, returnValue}) {
     this.pool[taskId].resolveExec(returnValue);
     delete this.pool[taskId];
   }
-  rejectResponse({taskId}) {
+  reject({taskId}) {
     this.pool[taskId].rejectExec('Method not found');
     delete this.pool[taskId];
   }
 };
 var Workio = class {
   constructor(workerFn) {
-    if (!(new.target && workerFn instanceof Function))
+    if (!(workerFn instanceof Function))
       return void 0;
     const sudoKey = random64(), workerURL = URL.createObjectURL(new Blob([
       `(${workerTemp.toString().replace(/\\0sudoKey\\0/, sudoKey).replace(/\\0runtimeKey\\0/, runtimeKey).replace(/'\\0base\\0'/, runtimeKey === 'other' ? `'${window.location.href}'` : 'undefined').replace(/'\\0workerFn\\0'/, `(${workerFn.toString()})`)})()`
@@ -139,7 +148,7 @@ var Workio = class {
             if (data.sudoKey === sudoKey) {
               ({
                 0({methodList}) {
-                  methodList.forEach((methodName) => {
+                  methodList.forEach(function(methodName) {
                     methodObject[methodName] = function(...workerArgs) {
                       return new Promise(function(resolveExec, rejectExec) {
                         workerInstance.postMessage({
@@ -161,13 +170,13 @@ var Workio = class {
                   rejectInit('Failed to initialization');
                 },
                 2({returnValue, taskId}) {
-                  taskPool.setResponse({returnValue, taskId});
+                  taskPool.resolve({returnValue, taskId});
                 },
                 3({taskId}) {
-                  taskPool.rejectResponse(taskId);
+                  taskPool.reject({taskId});
                 },
-                6({taskId}) {
-                  taskPool.setResponse({taskId});
+                4({taskId}) {
+                  taskPool.resolve({taskId});
                   workerInstance.terminate();
                   for (const methodObjectIndex in methodObject) {
                     delete methodObject[methodObjectIndex];
@@ -180,16 +189,11 @@ var Workio = class {
           workerInstance.postMessage({
             code: 2,
             initArgs,
-            sudoKey,
-            isInstance: false
+            sudoKey
           });
           workerInstance.addEventListener('message', function({data}) {
             if (data.sudoKey === sudoKey) {
-              if (data.initSucceed) {
-                resolveInit(data.returnValue);
-              } else {
-                rejectInit();
-              }
+              resolveInit(data.returnValue);
               workerInstance.terminate();
             }
           }, {passive: true});

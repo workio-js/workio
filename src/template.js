@@ -3,7 +3,20 @@ export async function workerTemp() {
 
 	let runtimeKey = '\0runtimeKey\0',
 		sudoKey = '\0sudoKey\0',
-		publicFunctionInterface = {};
+		publicFunctionInterface = {},
+		execFn = async function () {
+			let runtimeKey = undefined,
+				sudoKey = undefined,
+				publicFunctionInterface = undefined,
+				execFn = undefined;
+	
+			runtimeKey;
+			sudoKey;
+			publicFunctionInterface;
+			execFn;
+	
+			return await ('\0workerFn\0')(...arguments[0]);
+		};
 
 	// if (runtimeKey === 'node') {
 	// 	const { parentPort } = require('node:worker_threads');
@@ -35,20 +48,23 @@ export async function workerTemp() {
 	Object.assign(self, {
 		window: self,
 
-		close: () => self.env.op_close,
+		close() {
+			return self.env.op_close
+		},
 
 		fetch: runtimeKey === 'other'
-			? ((superFn) =>
-				function () {
+			? (function (superFn) {
+				return function () {
 					if (runtimeKey === 'other') {
 						arguments[0] = new URL(arguments[0], import.meta.url);
 					}
 					return superFn.apply(this, arguments);
-				})(self.fetch)
+				}
+			})(self.fetch)
 			: self.fetch,
 	});
 
-	self.addEventListener('message', ({ data }) => {
+	self.addEventListener('message', function ({ data }) {
 		if (data.sudoKey === sudoKey) {
 			/**
 			 * 0: init
@@ -56,26 +72,10 @@ export async function workerTemp() {
 			 * 2: func
 			 */
 			({
-				0({ initArgs }) {
+				async 0({ initArgs }) {
 					Object.assign(
 						publicFunctionInterface,
-						(function () {
-							let runtimeKey = undefined,
-								sudoKey = undefined,
-								publicFunctionInterface = undefined,
-								pendingTask = undefined,
-								processTask = undefined,
-								initialized = undefined;
-
-							runtimeKey;
-							sudoKey;
-							publicFunctionInterface;
-							pendingTask;
-							processTask;
-							initialized;
-
-							return ('\0workerFn\0')(...initArgs);
-						})(),
+						await execFn(initArgs),
 					);
 					self.postMessage({
 						code: 0,
@@ -94,7 +94,7 @@ export async function workerTemp() {
 						});
 						return;
 					}
-					((returnValue) => {
+					(function(returnValue) {
 						if (returnValue === self.env.op_close) {
 							self.postMessage({
 								code: 4,
@@ -129,6 +129,15 @@ export async function workerTemp() {
 						);
 					})(await publicFunctionInterface[methodName](...workerArgs));
 				},
+
+				async 2({ initArgs, taskId }) {
+					self.postMessage({
+						taskId,
+						returnValue: await execFn(initArgs),
+
+						sudoKey,
+					});
+				}
 			})[data.code](data);
 		}
 	}, { passive: true });
