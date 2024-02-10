@@ -5,14 +5,15 @@ import { TaskPool } from './taskPool.js';
 
 export class Workio {
 	/**
-	 * @param { Function } workerFn
+	 * @param { Function } workerObject
 	 * @returns { Function }
 	 */
 
-	constructor(workerFn) {
+	constructor(workerObject) {
 		if (
 			!(
-				workerFn instanceof Function
+				workerObject instanceof Function ||
+				typeof workerObject === "string"
 			)
 		) return undefined;
 
@@ -28,7 +29,7 @@ export class Workio {
 								/'\\0base\\0'/,
 								runtimeKey === 'other' ? `'${window.location.href}'` : 'undefined',
 							)
-							.replace(/'\\0workerFn\\0'/, `(${workerFn.toString()})`)
+							.replace(/'\\0workerFn\\0'/, `(${workerObject.toString()})`)
 					})()`,
 				], { type: 'application/javascript' }),
 			);

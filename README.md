@@ -1,4 +1,4 @@
-# [Workio](https://workio.dev)
+# [Workio](./book/get-started.md)
 
 ![Static Badge](https://img.shields.io/badge/Chrome-80-gray?logo=google-chrome&labelColor=gray&color=lightgreen)
 ![Static Badge](https://img.shields.io/badge/Edge-80-gray?logo=microsoft-edge&labelColor=gray&color=lightgreen)
