@@ -11,13 +11,12 @@
 Workio is a JavaScript library for building and managing Web Workers.
 - **Touch-and-Go:** No more worker.js to build additional off-thread operations. offload to comfortable worker threads with single line.
 - **I/O Optimization:** Caching is available for large primitives.
-- **Promise-based:** 
+- **Thin and Safe:** 
 
 [Visit StackBlitz for your first step into the developer experience at Workio.](https://stackblitz.com/edit/web-platform-hceprw?file=script.js)  
 
 ```javascript
-// Install
-const { Workio } = await import("https://workio.dev/@0.0.11/mod.js");
+const { Workio } = await import("https://workio.dev/@0.0.12/mod.js"); // install through http
 
 const WorkerTemplate = new Workio((myName) => {
     function sayHello(yourName) {
@@ -28,8 +27,8 @@ const WorkerTemplate = new Workio((myName) => {
 
 const workerInstance = await new WorkerTemplate("Workio"); // create web worker
 
-console.log(await workerInstance.sayHello("Foo")); // all methods are async
+console.log(await workerInstance.sayHello("Worker")); // "Hello Worker from Workio!" 
 
-await workerInstance.close();
+workerInstance.close();
 ```
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz_small.svg)](https://stackblitz.com/edit/web-platform-hceprw?file=script.js)
