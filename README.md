@@ -6,7 +6,7 @@
 ![Static Badge](https://img.shields.io/badge/Firefox-114-gray?logo=firefox&labelColor=gray&color=lightgreen)
 ![Static Badge](https://img.shields.io/badge/Safari-15-gray?logo=safari&labelColor=gray&color=lightgreen&logoColor=lightblue)
 ![Static Badge](https://img.shields.io/badge/Deno-1.0-gray?logo=deno&labelColor=gray&color=lightgreen)
-![Static Badge](https://img.shields.io/badge/Node.js-12-gray?logo=nodedotjs&labelColor=gray&color=lightgreen&logoColor=12ef15)
+<!-- ![Static Badge](https://img.shields.io/badge/Node.js-12-gray?logo=nodedotjs&labelColor=gray&color=lightgreen&logoColor=12ef15) -->
 
 Workio is a JavaScript library for building and managing Web Workers.
 - **Touch-and-Go:** No more worker.js to build additional off-thread operations. offload to comfortable worker threads with single line.
@@ -16,7 +16,7 @@ Workio is a JavaScript library for building and managing Web Workers.
 [Visit StackBlitz for your first step into the developer experience at Workio.](https://stackblitz.com/edit/web-platform-hceprw?file=script.js)  
 
 ```javascript
-const { Workio } = await import("https://workio.dev/@0.0.12/mod.js");
+const { Workio } = await import("https://workio.dev/@0.1.0/mod.js");
 
 const WorkerTemplate = new Workio((myName) => {
     function sayHello(yourName) {

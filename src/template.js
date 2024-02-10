@@ -9,12 +9,12 @@ export async function workerTemp() {
 				sudoKey = undefined,
 				publicFunctionInterface = undefined,
 				execFn = undefined;
-	
+
 			runtimeKey;
 			sudoKey;
 			publicFunctionInterface;
 			execFn;
-	
+
 			return await ('\0workerFn\0')(...arguments[0]);
 		};
 
@@ -49,7 +49,7 @@ export async function workerTemp() {
 		window: self,
 
 		close() {
-			return self.env.op_close
+			return self.env.op_close;
 		},
 
 		fetch: runtimeKey === 'other'
@@ -59,7 +59,7 @@ export async function workerTemp() {
 						arguments[0] = new URL(arguments[0], import.meta.url);
 					}
 					return superFn.apply(this, arguments);
-				}
+				};
 			})(self.fetch)
 			: self.fetch,
 	});
@@ -94,7 +94,7 @@ export async function workerTemp() {
 						});
 						return;
 					}
-					(function(returnValue) {
+					(function (returnValue) {
 						if (returnValue === self.env.op_close) {
 							self.postMessage({
 								code: 4,
@@ -137,7 +137,7 @@ export async function workerTemp() {
 
 						sudoKey,
 					});
-				}
+				},
 			})[data.code](data);
 		}
 	}, { passive: true });

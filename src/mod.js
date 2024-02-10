@@ -79,7 +79,7 @@ export class Workio {
 														});
 													},
 												);
-											}
+											};
 										});
 										resolveInit(methodObject);
 									},
@@ -99,7 +99,7 @@ export class Workio {
 									4({ taskId }) {
 										taskPool.resolve({ taskId });
 										workerInstance.terminate();
-										for(const methodObjectIndex in methodObject) {
+										for (const methodObjectIndex in methodObject) {
 											delete methodObject[methodObjectIndex];
 										}
 									},
@@ -113,6 +113,7 @@ export class Workio {
 
 							sudoKey,
 						});
+
 						workerInstance.addEventListener('message', function ({ data }) {
 							if (data.sudoKey === sudoKey) {
 								resolveInit(data.returnValue);
