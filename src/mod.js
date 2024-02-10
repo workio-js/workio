@@ -1,7 +1,7 @@
 import { workerTemp } from './template.js';
 import { random64 } from './random64.js';
 import { runtimeKey } from './runtimeKey.js';
-import { TaskPool } from './TaskPool.js';
+import { TaskPool } from './taskPool.js';
 
 export class Workio {
 	/**
@@ -12,7 +12,6 @@ export class Workio {
 	constructor(workerFn) {
 		if (
 			!(
-				new.target &&
 				workerFn instanceof Function
 			)
 		) return undefined;
@@ -58,9 +57,7 @@ export class Workio {
 								 * 1: init failed
 								 * 2: exec success
 								 * 3: exec failed
-								 * 4: func success
-								 * 5: func failed
-								 * 6: close
+								 * 4: close
 								 */
 
 								({
@@ -92,15 +89,15 @@ export class Workio {
 									},
 
 									2({ returnValue, taskId }) {
-										taskPool.setResponse({ returnValue, taskId });
+										taskPool.resolve({ returnValue, taskId });
 									},
 
 									3({ taskId }) {
-										taskPool.rejectResponse(taskId);
+										taskPool.reject({ taskId });
 									},
 
-									6({ taskId }) {
-										taskPool.setResponse({ taskId });
+									4({ taskId }) {
+										taskPool.resolve({ taskId });
 										workerInstance.terminate();
 										for(const methodObjectIndex in methodObject) {
 											delete methodObject[methodObjectIndex];

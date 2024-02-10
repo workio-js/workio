@@ -97,7 +97,7 @@ export async function workerTemp() {
 					((returnValue) => {
 						if (returnValue === self.env.op_close) {
 							self.postMessage({
-								code: 6,
+								code: 4,
 								taskId,
 
 								sudoKey,

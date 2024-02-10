@@ -10,11 +10,11 @@ export class TaskPool {
 
 		return currentId;
 	}
-	setResponse({ taskId, returnValue }) {
+	resolve({ taskId, returnValue }) {
 		this.pool[taskId].resolveExec(returnValue);
 		delete this.pool[taskId];
 	}
-	rejectResponse({ taskId }) {
+	reject({ taskId }) {
 		this.pool[taskId].rejectExec('Method not found');
 		delete this.pool[taskId];
 	}

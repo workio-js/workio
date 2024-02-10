@@ -26,7 +26,7 @@ const WorkerTemplate = new Workio((myName) => {
     return { sayHello, close } // expose methods as return value
 });
 
-const workerInstance = new WorkerTemplate("Workio"); // create web worker
+const workerInstance = await new WorkerTemplate("Workio"); // create web worker
 
 console.log(await workerInstance.sayHello("Foo")); // all methods are async
 
