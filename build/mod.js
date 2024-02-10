@@ -1,37 +1,4 @@
-// src/util/RuntimeKey.js
-var runtimeKey = globalThis?.process?.release?.name === 'node' ? 'node' : globalThis?.Deno !== void 0 ? 'deno' : globalThis?.Bun !== void 0 ? 'bun' : globalThis?.fastly !== void 0 ? 'fastly' : globalThis?.__lagon__ !== void 0 ? 'lagon' : globalThis?.WebSocketPair instanceof Function ? 'workerd' : globalThis?.EdgeRuntime instanceof String ? 'edge-light' : 'other';
-
-// src/core/ScriptURL.js
-var URLStorage = new Map();
-
-// src/core/TaskPool.js
-var TaskPool = class {
-  constructor() {
-    this.pool = {};
-    this.nextId = 0n;
-  }
-  push({resolveExec, rejectExec}) {
-    let currentId = this.nextId;
-    this.pool[this.nextId] = {resolveExec, rejectExec};
-    this.nextId++;
-    return currentId;
-  }
-  setResponse({taskId, returnValue}) {
-    this.pool[taskId].resolveExec(returnValue);
-    delete this.pool[taskId];
-  }
-  rejectResponse({taskId}) {
-    this.pool[taskId].rejectExec('Method not found');
-    delete this.pool[taskId];
-  }
-};
-
-// src/util/Random64.js
-function random64() {
-  return btoa(String.fromCharCode.apply(null, crypto.getRandomValues(new Uint8Array(64))));
-}
-
-// src/template/WorkerTemp.js
+// src/template.js
 async function workerTemp() {
   import.meta.url = '\0base\0';
   let runtimeKey2 = '\0runtimeKey\0', sudoKey = '\0sudoKey\0', publicFunctionInterface = {};
@@ -115,7 +82,37 @@ async function workerTemp() {
   }, {passive: true});
 }
 
-// src/Workio.js
+// src/random64.js
+function random64() {
+  return btoa(String.fromCharCode.apply(null, crypto.getRandomValues(new Uint8Array(64))));
+}
+
+// src/runtimeKey.js
+var runtimeKey = globalThis?.process?.release?.name === 'node' ? 'node' : globalThis?.Deno !== void 0 ? 'deno' : globalThis?.Bun !== void 0 ? 'bun' : globalThis?.fastly !== void 0 ? 'fastly' : globalThis?.__lagon__ !== void 0 ? 'lagon' : globalThis?.WebSocketPair instanceof Function ? 'workerd' : globalThis?.EdgeRuntime instanceof String ? 'edge-light' : 'other';
+
+// src/TaskPool.js
+var TaskPool = class {
+  constructor() {
+    this.pool = {};
+    this.nextId = 0n;
+  }
+  push({resolveExec, rejectExec}) {
+    let currentId = this.nextId;
+    this.pool[this.nextId] = {resolveExec, rejectExec};
+    this.nextId++;
+    return currentId;
+  }
+  setResponse({taskId, returnValue}) {
+    this.pool[taskId].resolveExec(returnValue);
+    delete this.pool[taskId];
+  }
+  rejectResponse({taskId}) {
+    this.pool[taskId].rejectExec('Method not found');
+    delete this.pool[taskId];
+  }
+};
+
+// src/mod.js
 var Workio = class {
   constructor(workerFn) {
     if (!(new.target && workerFn instanceof Function))
@@ -124,10 +121,10 @@ var Workio = class {
       `(${workerTemp.toString().replace(/\\0sudoKey\\0/, sudoKey).replace(/\\0runtimeKey\\0/, runtimeKey).replace(/'\\0base\\0'/, runtimeKey === 'other' ? `'${window.location.href}'` : 'undefined').replace(/'\\0workerFn\\0'/, `(${workerFn.toString()})`)})()`
     ], {type: 'application/javascript'}));
     return function(...initArgs) {
-      const initTarget = !!new.target;
+      const isConstructed = !!new.target;
       return new Promise(function(resolveInit, rejectInit) {
         const workerInstance = new Worker(workerURL, {type: 'module', eval: true});
-        if (initTarget) {
+        if (isConstructed) {
           const taskPool = new TaskPool(), methodObject = {};
           workerInstance.postMessage({
             code: 0,

@@ -1,9 +1,7 @@
-import { WorkioWorker } from './Worker.js';
-import { WorkioFunction } from './Function.js';
-import { workerTemp } from './template/WorkerTemp.js';
-import { random64 } from './util/Random64.js';
-import { runtimeKey } from './util/RuntimeKey.js';
-import { TaskPool } from './core/TaskPool.js';
+import { workerTemp } from './template.js';
+import { random64 } from './random64.js';
+import { runtimeKey } from './runtimeKey.js';
+import { TaskPool } from './TaskPool.js';
 
 export class Workio {
 	/**
@@ -37,19 +35,20 @@ export class Workio {
 			);
 
 		return function (...initArgs) {
-			const initTarget = !!new.target;
+			const isConstructed = !!new.target;
 
 			return new Promise(
 				function (resolveInit, rejectInit) {
 					const workerInstance = new Worker(workerURL, { type: 'module', eval: true });
 
-					if (initTarget) {
+					if (isConstructed) {
 						const taskPool = new TaskPool(),
 							methodObject = {};
 
 						workerInstance.postMessage({
 							code: 0,
 							initArgs,
+
 							sudoKey,
 						});
 						workerInstance.addEventListener('message', function ({ data }) {
@@ -114,8 +113,9 @@ export class Workio {
 						workerInstance.postMessage({
 							code: 2,
 							initArgs,
-							sudoKey,
 							isInstance: false,
+
+							sudoKey,
 						});
 						workerInstance.addEventListener('message', function ({ data }) {
 							if (data.sudoKey === sudoKey) {
