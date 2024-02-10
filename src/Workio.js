@@ -36,7 +36,7 @@ export class Workio {
 				], { type: 'application/javascript' }),
 			);
 
-		return function () {
+		return function (...initArgs) {
 			const initTarget = !!new.target;
 
 			return new Promise(
@@ -46,10 +46,9 @@ export class Workio {
 					if (initTarget) {
 						const taskPool = new TaskPool();
 						workerInstance.postMessage({
-							type: 'init',
-							initArgs: Array.from(arguments),
+							code: 0,
+							initArgs,
 							sudoKey,
-							isInstance: true,
 						});
 						workerInstance.addEventListener('message', function ({ data }) {
 							if (data.sudoKey === sudoKey) {
@@ -58,26 +57,28 @@ export class Workio {
 								 * 1: init failed
 								 * 2: exec success
 								 * 3: exec failed
-								 * 4: req
+								 * 4: func success
+								 * 5: func failed
+								 * 6: close
 								 */
 
 								({
-									0({ publicFunctionInterface }) {
+									0({ methodList }) {
 										const pFIResult = {};
-
-										for (const method in publicFunctionInterface) {
-											pFIResult[method] = {
-												value: function () {
+										methodList.forEach((methodName) => {
+											pFIResult[methodName] = {
+												value: function (...workerArgs) {
 													return new Promise(
 														function (resolveExec, rejectExec) {
 															workerInstance.postMessage({
-																type: 'exec',
-																method,
-																workerArgs: Array.from(arguments),
+																code: 1,
+																methodName,
+																workerArgs,
 																taskId: taskPool.push({
 																	resolveExec,
 																	rejectExec,
 																}),
+																sudoKey,
 															});
 														},
 													);
@@ -85,7 +86,7 @@ export class Workio {
 												writable: false,
 												enumerable: true,
 											};
-										}
+										});
 										resolveInit(Object.defineProperties({}, pFIResult));
 									},
 
@@ -101,14 +102,16 @@ export class Workio {
 										taskPool.rejectResponse(taskId);
 									},
 
-									4({ path, taskId }) {
+									6({ taskId }) {
+										taskPool.setResponse({ taskId });
+										workerInstance.terminate();
 									},
 								})[data.code](data);
 							}
 						}, { passive: true });
 					} else {
 						workerInstance.postMessage({
-							type: 'func',
+							code: 2,
 							initArgs: Array.from(arguments),
 							sudoKey,
 							isInstance: false,

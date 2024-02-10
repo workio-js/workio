@@ -3,9 +3,7 @@ export async function workerTemp() {
 
 	let runtimeKey = '\0runtimeKey\0',
 		sudoKey = '\0sudoKey\0',
-		publicFunctionInterface = {},
-		pendingTask = [],
-		initialized = false;
+		publicFunctionInterface = {};
 
 	if (runtimeKey === 'node') {
 		const { parentPort } = require('node:worker_threads');
@@ -32,9 +30,6 @@ export async function workerTemp() {
 			}),
 			writable: false,
 		},
-		parent: {
-			value: new Proxy(),
-		},
 	});
 
 	Object.assign(self, {
@@ -53,13 +48,18 @@ export async function workerTemp() {
 			: self.fetch,
 	});
 
-	self.addEventListener('message', async ({ data }) => {
+	self.addEventListener('message', ({ data }) => {
 		if (data.sudoKey === sudoKey) {
-			if (data.workerArgs) {
-				if (data.isInstance) {
+			/**
+			 * 0: init
+			 * 1: exec
+			 * 2: func
+			 */
+			({
+				0({ initArgs }) {
 					Object.assign(
 						publicFunctionInterface,
-						await (function () {
+						(function () {
 							let runtimeKey = undefined,
 								sudoKey = undefined,
 								publicFunctionInterface = undefined,
@@ -74,45 +74,43 @@ export async function workerTemp() {
 							processTask;
 							initialized;
 
-							return ('\0workerFn\0')(...data.workerArgs);
+							return ('\0workerFn\0')(...initArgs);
 						})(),
 					);
+					self.postMessage({
+						code: 0,
+						sudoKey,
+						methodList: Object.keys(publicFunctionInterface),
+					});
+				},
 
-					initialized = true;
-					pendingTask.forEach((index) => processTask(index));
-					pendingTask = [];
-				} else {
-					self.postMessage(
-						await (function () {
-							let runtimeKey = undefined,
-								sudoKey = undefined,
-								publicFunctionInterface = undefined,
-								pendingTask = undefined,
-								processTask = undefined,
-								initialized = undefined;
+				async 1({ methodName, workerArgs, taskId }) {
+					if (!(methodName in publicFunctionInterface)) {
+						self.postMessage({
+							code: 3,
+							taskId,
 
-							runtimeKey;
-							sudoKey;
-							publicFunctionInterface;
-							pendingTask;
-							processTask;
-							initialized;
-
-							return ('\0workerFn\0')(...data.workerArgs);
-						})(),
-					);
-				}
-			}
-
-			if ('task' in data) {
-				if (data.task in publicFunctionInterface) {
+							sudoKey,
+						});
+						return;
+					}
 					((returnValue) => {
+						if (returnValue === self.env.op_close) {
+							self.postMessage({
+								code: 6,
+								taskId,
+
+								sudoKey,
+							});
+							return;
+						}
 						self.postMessage(
 							{
-								sudoKey,
+								code: 2,
 								returnValue,
 								taskId,
-								close: (returnValue === self.env.op_close),
+
+								sudoKey,
 							},
 							returnValue instanceof (
 									ArrayBuffer ||
@@ -129,15 +127,9 @@ export async function workerTemp() {
 								? [returnValue]
 								: null,
 						);
-					})(await publicFunctionInterface[task](...args));
-				} else {
-					self.postMessage({
-						sudoKey,
-						methodNotFound: true,
-						taskId,
-					});
-				}
-			}
+					})(await publicFunctionInterface[methodName](...workerArgs));
+				},
+			})[data.code](data);
 		}
 	}, { passive: true });
 }
