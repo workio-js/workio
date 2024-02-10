@@ -22,7 +22,7 @@ const WorkerTemplate = new Workio((myName) => {
     function sayHello(yourName) {
         return `Hello, ${yourName} from ${myName}!` // use constructor arguments
     }
-    return { sayHello, close } // expose methods as return value
+    return { sayHello, close } // expose methods as return value (inventive part!)
 });
 
 const workerInstance = await new WorkerTemplate("Workio"); // create web worker
