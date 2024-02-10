@@ -44,7 +44,9 @@ export class Workio {
 					const workerInstance = new Worker(workerURL, { type: 'module', eval: true });
 
 					if (initTarget) {
-						const taskPool = new TaskPool();
+						const taskPool = new TaskPool(),
+							methodObject = {};
+
 						workerInstance.postMessage({
 							code: 0,
 							initArgs,
@@ -64,30 +66,26 @@ export class Workio {
 
 								({
 									0({ methodList }) {
-										const pFIResult = {};
 										methodList.forEach((methodName) => {
-											pFIResult[methodName] = {
-												value: function (...workerArgs) {
-													return new Promise(
-														function (resolveExec, rejectExec) {
-															workerInstance.postMessage({
-																code: 1,
-																methodName,
-																workerArgs,
-																taskId: taskPool.push({
-																	resolveExec,
-																	rejectExec,
-																}),
-																sudoKey,
-															});
-														},
-													);
-												},
-												writable: false,
-												enumerable: true,
-											};
+											methodObject[methodName] = function (...workerArgs) {
+												return new Promise(
+													function (resolveExec, rejectExec) {
+														workerInstance.postMessage({
+															code: 1,
+															methodName,
+															workerArgs,
+															taskId: taskPool.push({
+																resolveExec,
+																rejectExec,
+															}),
+
+															sudoKey,
+														});
+													},
+												);
+											}
 										});
-										resolveInit(Object.defineProperties({}, pFIResult));
+										resolveInit(methodObject);
 									},
 
 									1() {
@@ -105,6 +103,9 @@ export class Workio {
 									6({ taskId }) {
 										taskPool.setResponse({ taskId });
 										workerInstance.terminate();
+										for(const methodObjectIndex in methodObject) {
+											delete methodObject[methodObjectIndex];
+										}
 									},
 								})[data.code](data);
 							}
@@ -112,7 +113,7 @@ export class Workio {
 					} else {
 						workerInstance.postMessage({
 							code: 2,
-							initArgs: Array.from(arguments),
+							initArgs,
 							sudoKey,
 							isInstance: false,
 						});

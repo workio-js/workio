@@ -17,7 +17,7 @@ const
 
 const mod = (await esbuild.build({
 	plugins: [denoPlugin()],
-	entryPoints: ["./workio/Workio.js"],
+	entryPoints: ["./src/Workio.js"],
 	write: false,
 	bundle: true,
 	format: "esm",
@@ -37,7 +37,7 @@ await Deno.writeTextFile("./build/common.js", common);
 
 const min = (await esbuild.build({
 	plugins: [denoPlugin()],
-	entryPoints: ["./workio/Workio.js"],
+	entryPoints: ["./src/Workio.js"],
 	write: false,
 	bundle: true,
 	minify: true,

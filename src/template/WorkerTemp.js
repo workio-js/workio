@@ -5,12 +5,12 @@ export async function workerTemp() {
 		sudoKey = '\0sudoKey\0',
 		publicFunctionInterface = {};
 
-	if (runtimeKey === 'node') {
-		const { parentPort } = require('node:worker_threads');
-		Object.assign(self, {
-			postMessage: parentPort.postMessage,
-		});
-	}
+	// if (runtimeKey === 'node') {
+	// 	const { parentPort } = require('node:worker_threads');
+	// 	Object.assign(self, {
+	// 		postMessage: parentPort.postMessage,
+	// 	});
+	// }
 
 	class WorkioOp {
 		constructor() {}
