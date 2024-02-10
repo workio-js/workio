@@ -3,32 +3,7 @@ import { WorkioFunction } from './Function.js';
 import { workerTemp } from './template/WorkerTemp.js';
 import { random64 } from './util/Random64.js';
 import { runtimeKey } from './util/RuntimeKey.js';
-
-// export class Workio {
-// 	/**
-// 	 * @param { Function } workerFn Describes function which executed on worker thread.
-// 	 *
-// 	 * @param { Object } [config]
-// 	 * @param { Boolean } [config.multiplex]
-// 	 */
-
-// 	constructor(workerFn, config) {
-// 		switch (false) {
-// 			case new.target:
-// 			case workerFn instanceof Function:
-// 				return undefined;
-
-// 			default:
-// 				return function WorkioInitializer(...workerArgs) {
-// 					return (new.target)
-// 						? new WorkioWorker({ workerFn, workerArgs })
-// 						: new Promise((resolve) =>
-// 							new WorkioFunction({ resolve, workerFn, workerArgs })
-// 						);
-// 				};
-// 		}
-// 	}
-// }
+import { TaskPool } from './core/TaskPool.js';
 
 export class Workio {
 	/**
@@ -61,54 +36,96 @@ export class Workio {
 				], { type: 'application/javascript' }),
 			);
 
-		return function (...initializerArg) {
-			return new Promise(function (resolveInit, rejectInit) {
-				const workerInstance = new Worker(workerURL, { type: 'module', eval: true });
+		return function () {
+			const initTarget = !!new.target;
 
-				if (new.target) {
-					workerInstance.postMessage(
-						{
-							initializerArg,
+			return new Promise(
+				function (resolveInit, rejectInit) {
+					const workerInstance = new Worker(workerURL, { type: 'module', eval: true });
+
+					if (initTarget) {
+						const taskPool = new TaskPool();
+						workerInstance.postMessage({
+							type: 'init',
+							initArgs: Array.from(arguments),
 							sudoKey,
 							isInstance: true,
-						},
-					);
-					workerInstance.addEventListener('message', function ({ data }) {
-						if (data.sudoKey === sudoKey) {
-							if (data.initSucceed) {
-								const pFIResult = {};
+						});
+						workerInstance.addEventListener('message', function ({ data }) {
+							if (data.sudoKey === sudoKey) {
+								/**
+								 * 0: init success
+								 * 1: init failed
+								 * 2: exec success
+								 * 3: exec failed
+								 * 4: req
+								 */
 
-								for (const pFIIndex in data.publicFunctionInterface) {
-									pFIResult[pFIIndex.name] = function () {
-									};
-								}
+								({
+									0({ publicFunctionInterface }) {
+										const pFIResult = {};
 
-								resolveInit(pFIResult);
-							} else {
-								rejectInit();
+										for (const method in publicFunctionInterface) {
+											pFIResult[method] = {
+												value: function () {
+													return new Promise(
+														function (resolveExec, rejectExec) {
+															workerInstance.postMessage({
+																type: 'exec',
+																method,
+																workerArgs: Array.from(arguments),
+																taskId: taskPool.push({
+																	resolveExec,
+																	rejectExec,
+																}),
+															});
+														},
+													);
+												},
+												writable: false,
+												enumerable: true,
+											};
+										}
+										resolveInit(Object.defineProperties({}, pFIResult));
+									},
+
+									1() {
+										rejectInit('Failed to initialization');
+									},
+
+									2({ returnValue, taskId }) {
+										taskPool.setResponse({ returnValue, taskId });
+									},
+
+									3({ taskId }) {
+										taskPool.rejectResponse(taskId);
+									},
+
+									4({ path, taskId }) {
+									},
+								})[data.code](data);
 							}
-						}
-					}, { passive: true });
-				} else {
-					workerInstance.postMessage(
-						{
-							initializerArg,
+						}, { passive: true });
+					} else {
+						workerInstance.postMessage({
+							type: 'func',
+							initArgs: Array.from(arguments),
 							sudoKey,
 							isInstance: false,
-						},
-					);
-					workerInstance.addEventListener('message', function ({ data }) {
-						if (data.sudoKey === sudoKey) {
-							if (data.initSucceed) {
-								resolveInit(data.returnValue);
-							} else {
-								rejectInit();
+						});
+						workerInstance.addEventListener('message', function ({ data }) {
+							if (data.sudoKey === sudoKey) {
+								if (data.initSucceed) {
+									resolveInit(data.returnValue);
+								} else {
+									rejectInit();
+								}
+								workerInstance.terminate();
 							}
-							workerInstance.terminate();
-						}
-					}, { once: true, passive: true });
-				}
-			});
+						}, { passive: true });
+					}
+				},
+			);
 		};
 	}
 }

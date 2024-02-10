@@ -32,6 +32,9 @@ export async function workerTemp() {
 			}),
 			writable: false,
 		},
+		parent: {
+			value: new Proxy(),
+		},
 	});
 
 	Object.assign(self, {
