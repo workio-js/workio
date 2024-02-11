@@ -1,4 +1,4 @@
-export async function workerTemp() {
+export const workerTemp = async () => {
 	import.meta.url = '\0base\0';
 
 	let runtimeKey = '\0runtimeKey\0',
@@ -17,13 +17,6 @@ export async function workerTemp() {
 
 			return await ('\0workerFn\0')(...arguments[0]);
 		};
-
-	// if (runtimeKey === 'node') {
-	// 	const { parentPort } = require('node:worker_threads');
-	// 	Object.assign(self, {
-	// 		postMessage: parentPort.postMessage,
-	// 	});
-	// }
 
 	class WorkioOp {
 		constructor() {}
@@ -64,7 +57,7 @@ export async function workerTemp() {
 			: self.fetch,
 	});
 
-	self.addEventListener('message', function ({ data }) {
+	self.addEventListener('message', ({ data }) => {
 		if (data.sudoKey === sudoKey) {
 			/**
 			 * 0: init
@@ -94,7 +87,7 @@ export async function workerTemp() {
 						});
 						return;
 					}
-					(function (returnValue) {
+					((returnValue) => {
 						if (returnValue === self.env.op_close) {
 							self.postMessage({
 								code: 4,
@@ -141,4 +134,4 @@ export async function workerTemp() {
 			})[data.code](data);
 		}
 	}, { passive: true });
-}
+};

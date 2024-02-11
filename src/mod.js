@@ -5,15 +5,14 @@ import { TaskPool } from './taskPool.js';
 
 export class Workio {
 	/**
-	 * @param { Function } workerObject
+	 * @param { Function } workerFn
 	 * @returns { Function }
 	 */
 
-	constructor(workerObject) {
+	constructor(workerFn) {
 		if (
 			!(
-				workerObject instanceof Function ||
-				typeof workerObject === "string"
+				workerFn instanceof Function
 			)
 		) return undefined;
 
@@ -29,7 +28,7 @@ export class Workio {
 								/'\\0base\\0'/,
 								runtimeKey === 'other' ? `'${window.location.href}'` : 'undefined',
 							)
-							.replace(/'\\0workerFn\\0'/, `(${workerObject.toString()})`)
+							.replace(/'\\0workerFn\\0'/, `(${workerFn.toString()})`)
 					})()`,
 				], { type: 'application/javascript' }),
 			);
@@ -38,7 +37,7 @@ export class Workio {
 			const isConstructed = !!new.target;
 
 			return new Promise(
-				function (resolveInit, rejectInit) {
+				(resolveInit, rejectInit) => {
 					const workerInstance = new Worker(workerURL, { type: 'module', eval: true });
 
 					if (isConstructed) {
@@ -51,7 +50,7 @@ export class Workio {
 
 							sudoKey,
 						});
-						workerInstance.addEventListener('message', function ({ data }) {
+						workerInstance.addEventListener('message', ({ data }) => {
 							if (data.sudoKey === sudoKey) {
 								/**
 								 * 0: init success
@@ -63,24 +62,21 @@ export class Workio {
 
 								({
 									0({ methodList }) {
-										methodList.forEach(function (methodName) {
-											methodObject[methodName] = function (...workerArgs) {
-												return new Promise(
-													function (resolveExec, rejectExec) {
-														workerInstance.postMessage({
-															code: 1,
-															methodName,
-															workerArgs,
-															taskId: taskPool.push({
-																resolveExec,
-																rejectExec,
-															}),
+										methodList.forEach((methodName) => {
+											methodObject[methodName] = (...workerArgs) =>
+												new Promise((resolveExec, rejectExec) => {
+													workerInstance.postMessage({
+														code: 1,
+														methodName,
+														workerArgs,
+														taskId: taskPool.push({
+															resolveExec,
+															rejectExec,
+														}),
 
-															sudoKey,
-														});
-													},
-												);
-											};
+														sudoKey,
+													});
+												});
 										});
 										resolveInit(methodObject);
 									},
@@ -115,7 +111,7 @@ export class Workio {
 							sudoKey,
 						});
 
-						workerInstance.addEventListener('message', function ({ data }) {
+						workerInstance.addEventListener('message', ({ data }) => {
 							if (data.sudoKey === sudoKey) {
 								resolveInit(data.returnValue);
 								workerInstance.terminate();
