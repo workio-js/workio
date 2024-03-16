@@ -36,6 +36,14 @@ export const workerTemp = async () => {
 			}),
 			writable: false,
 		},
+		parent: {
+			value: new Proxy({}, {
+				get(target, prop) {
+
+				}
+			})
+		},
+		writable: false
 	});
 
 	Object.assign(self, {
