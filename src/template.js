@@ -39,11 +39,10 @@ export const workerTemp = async () => {
 		parent: {
 			value: new Proxy({}, {
 				get(target, prop) {
-
-				}
-			})
+				},
+			}),
 		},
-		writable: false
+		writable: false,
 	});
 
 	Object.assign(self, {
