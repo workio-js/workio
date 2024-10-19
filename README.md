@@ -16,7 +16,7 @@ Workio is a JavaScript library for building and managing Web Workers.
 ```javascript
 const { Workio } = await import("https://workio.dev/@0.1.0/mod.js");
 
-const instance = new Workio("./module.js");
+const instance = await Workio("./module.js", import.meta.url);
 
 console.log(await instance.sum(1, 2)); // "3" 
 
