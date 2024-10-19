@@ -16,18 +16,17 @@ Workio is a JavaScript library for building and managing Web Workers.
 ```javascript
 const { Workio } = await import("https://workio.dev/@0.1.0/mod.js");
 
-const WorkerTemplate = new Workio((myName) => {
-    function sayHello(yourName) {
-        return `Hello, ${yourName} from ${myName}!` // use constructor arguments
-    }
-    return { sayHello, close } // expose methods as return value (inventive part!)
-});
+const instance = new Workio("./module.js");
 
-const workerInstance = await new WorkerTemplate("Workio"); // create web worker
+console.log(await instance.sum(1, 2)); // "3" 
 
-console.log(await workerInstance.sayHello("Worker")); // "Hello Worker from Workio!" 
+Workio.terminate(workioInstance);
+```
 
-workerInstance.close();
+```javascript
+// module.js
+
+export const sum = (a, b) => a + b;
 ```
 
 </details>
