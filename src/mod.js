@@ -1,133 +1,64 @@
-import { workerTemp } from './template.js';
-import { random64 } from './random64.js';
-import { runtimeKey } from './runtimeKey.js';
-import { TaskPool } from './taskPool.js';
+const publishedWorkioInstance = new WeakMap();
 
-/**
- * @param { Function } workerFn
- * @returns { Function }
- */
+export const Workio = Object.assign(async (src, base) => {
 
-export class Workio {
-	constructor(workerFn) {
-		switch (false) {
-			case new.target:
-			case workerFn instanceof Function: {
-				return undefined;
-			}
+	const
+		{ port1: port, port2 } = new MessageChannel(),
+		worker = new Worker(import.meta.resolve("./temp.js"), { type: "module" }),
+		uuidBase = new Uint32Array(1),
+		resolverPool = {},
+		registerResolver = function(resolver) {
+			let uuidBuf;
+			while((uuidBuf = crypto.getRandomValues(uuidBase)[0]) in resolverPool) {/** */};
+			resolverPool[uuidBuf] = resolver;
+			return uuidBuf;
+		},
+		publishRequest = function (...args) {
+			const { method } = this || {};
+			return new Promise(resolve => port.postMessage({
+				type: "call",
+				body: { method, args },
+				uuid: registerResolver(resolve)
+			}))
+		},
+		initUuid = crypto.getRandomValues(uuidBase)[0]
+	;
 
-			default: {
-				const sudoKey = random64(),
-					workerURL = URL.createObjectURL(
-						new Blob([
-							`(${
-								workerTemp
-									.toString()
-									.replace(/\\0sudoKey\\0/, sudoKey)
-									.replace(/\\0runtimeKey\\0/, runtimeKey)
-									.replace(
-										/'\\0base\\0'/,
-										runtimeKey === 'other'
-											? `'${window.location.href}'`
-											: 'undefined',
-									)
-									.replace(/'\\0workerFn\\0'/, `(${workerFn.toString()})`)
-							})()`,
-						], { type: 'application/javascript' }),
-					);
+	src = base ? new URL(src, base).href : src;
 
-				return function (...initArgs) {
-					const isConstructed = !!new.target;
+	worker.postMessage({ src, port: port2 }, [port2]);
+	port.postMessage({ type: "init", uuid: initUuid });
 
-					return new Promise(
-						(resolveInit, rejectInit) => {
-							const workerInstance = new Worker(workerURL, {
-								type: 'module',
-								eval: true,
-							});
-
-							if (isConstructed) {
-								const taskPool = new TaskPool(),
-									methodObject = {};
-
-								workerInstance.postMessage({
-									code: 0,
-									initArgs,
-
-									sudoKey,
-								});
-								workerInstance.addEventListener('message', ({ data }) => {
-									if (data.sudoKey === sudoKey) {
-										/**
-										 * 0: init success
-										 * 1: init failed
-										 * 2: exec success
-										 * 3: exec failed
-										 * 4: close
-										 */
-
-										({
-											0({ methodList }) {
-												methodList.forEach((methodName) => {
-													methodObject[methodName] = (...workerArgs) =>
-														new Promise((resolveExec, rejectExec) => {
-															workerInstance.postMessage({
-																code: 1,
-																methodName,
-																workerArgs,
-																taskId: taskPool.push({
-																	resolveExec,
-																	rejectExec,
-																}),
-
-																sudoKey,
-															});
-														});
-												});
-												resolveInit(methodObject);
-											},
-
-											1() {
-												rejectInit('Failed to initialization');
-											},
-
-											2({ returnValue, taskId }) {
-												taskPool.resolve({ returnValue, taskId });
-											},
-
-											3({ taskId }) {
-												taskPool.reject({ taskId });
-											},
-
-											4({ taskId }) {
-												taskPool.resolve({ taskId });
-												workerInstance.terminate();
-												for (const methodObjectIndex in methodObject) {
-													delete methodObject[methodObjectIndex];
-												}
-											},
-										})[data.code](data);
-									}
-								}, { passive: true });
-							} else {
-								workerInstance.postMessage({
-									code: 2,
-									initArgs,
-
-									sudoKey,
-								});
-
-								workerInstance.addEventListener('message', ({ data }) => {
-									if (data.sudoKey === sudoKey) {
-										resolveInit(data.returnValue);
-										workerInstance.terminate();
-									}
-								}, { passive: true });
-							}
-						},
-					);
-				};
+	port.onmessage = ({ data: { type, body, uuid } }) => {
+		switch(type) {
+			case "return": {
+				resolverPool[uuid]?.(body);
+				break;
 			}
 		}
+	};
+
+	const IS_DEFAULT = await new Promise(resolve => worker.onmessage = ({ data: { type, body, uuid } }) => {
+		if(type !== "init" || uuid !== initUuid) return;
+		delete worker.onmessage;
+		resolve(body.IS_DEFAULT);
+	});
+
+	const baseObject = IS_DEFAULT
+		? (...args) => publishRequest.apply(null, args)
+		: new Proxy({}, {
+			get(_, method) {
+				if(method == "then") return;
+				return publishRequest.bind({ method })
+			}
+		})
+	;
+
+	publishedWorkioInstance.set(baseObject, worker);
+	return baseObject;
+
+}, {
+	terminate(workioInstance) {
+		publishedWorkioInstance.get(workioInstance)?.terminate();
 	}
-}
+})

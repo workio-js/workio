@@ -1,4 +1,4 @@
-import { Workio } from '../src/new-mod.js';
+import { Workio } from '../src/mod.js';
 
 const myWorkio = await Workio("./module.workio.js", import.meta.url);
 
