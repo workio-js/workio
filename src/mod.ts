@@ -1,3 +1,6 @@
+type WorkioTransferable = ArrayBuffer | MessagePort | ReadableStream | WritableStream | TransformStream | AudioData | ImageBitmap | VideoFrame | OffscreenCanvas | RTCDataChannel
+type WorkioInstance = { [key: string]: Function }
+
 const publishedWorkioInstanceMap = new WeakMap();
 
 export const Workio = Object.assign(
@@ -52,15 +55,16 @@ export const Workio = Object.assign(
 				? (...args: any[]) => publishRequest.apply(null, args)
 				: Object.defineProperties({}, Object.assign.apply(
 					null,
-					methodKeys.map((method: string) => ({
-						[method]: {
-							value(...args: any[]) {
-								return publishRequest.apply({ method }, args)
-							},
-							configurable: false,
-							enumerable: false
-						}
-					}))
+					methodKeys
+						.map((method: string) => ({
+							[method]: {
+								value(...args: any[]) {
+									return publishRequest.apply({ method }, args)
+								},
+								configurable: false,
+								enumerable: false
+							}
+						}))
 				))
 			,
 			{
@@ -76,13 +80,17 @@ export const Workio = Object.assign(
 
 	},
 	{
-		terminate(workioInstance: { [key: string]: Function }) {
+		terminate(workioInstance: WorkioInstance): void {
 			publishedWorkioInstanceMap.get(workioInstance)?.terminate();
 			publishedWorkioInstanceMap.delete(workioInstance);
 		},
 
-		isWorkio(workioInstance: { [key: string]: Function }) {
+		isWorkio(workioInstance: WorkioInstance): boolean {
 			return publishedWorkioInstanceMap.has(workioInstance)
+		},
+
+		isDefault(workioInstance: WorkioInstance): boolean {
+			return typeof workioInstance == "function"
 		}
 	}
 )
