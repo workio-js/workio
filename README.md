@@ -7,13 +7,15 @@
 ![Static Badge](https://img.shields.io/badge/Safari-15-gray?logo=safari&labelColor=gray&color=lightgreen&logoColor=lightblue)
 ![Static Badge](https://img.shields.io/badge/Deno-1.0-gray?logo=deno&labelColor=gray&color=lightgreen)
 <!-- ![Static Badge](https://img.shields.io/badge/Node.js-12-gray?logo=nodedotjs&labelColor=gray&color=lightgreen&logoColor=12ef15) -->
+```javascript
+// module.js
 
-Workio is a JavaScript library for building and managing Web Workers.
-<details>
-<summary><b>Touch-and-Go:</b> No more worker.js to build additional off-thread operations. offload to comfortable worker threads with single line.</summary>
-<br>
+export const sum = (a, b) => a + b;
+```
 
 ```javascript
+// main.js
+
 const { Workio } = await import("https://workio.dev/@0.1.0/mod.js");
 
 const instance = await Workio("./module.js", import.meta.url);
@@ -23,11 +25,11 @@ console.log(await instance.sum(1, 2)); // "3"
 Workio.terminate(workioInstance);
 ```
 
-```javascript
-// module.js
+Workio is a JavaScript library for building and managing Web Workers.
+<details>
+<summary><b>Touch-and-Go:</b> No more worker.js to build additional off-thread operations. offload to comfortable worker threads with single line.</summary>
+<br>
 
-export const sum = (a, b) => a + b;
-```
 
 </details>
 <details>

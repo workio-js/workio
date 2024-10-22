@@ -3,8 +3,8 @@ const publishedWorkioInstance = new WeakMap();
 export const Workio = Object.assign(async (src, base) => {
 
 	const
-		{ port1: port, port2 } = new MessageChannel(),
 		worker = new Worker(import.meta.resolve("./temp.js"), { type: "module" }),
+		{ port1: port, port2 } = new MessageChannel(),
 		uuidBase = new Uint32Array(1),
 		resolverPool = {},
 		registerResolver = function(resolver) {
@@ -60,5 +60,8 @@ export const Workio = Object.assign(async (src, base) => {
 }, {
 	terminate(workioInstance) {
 		publishedWorkioInstance.get(workioInstance)?.terminate();
+	},
+	isWorkio(workioInstance) {
+		return publishedWorkioInstance.has(workioInstance)
 	}
 })
