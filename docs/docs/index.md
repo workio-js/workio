@@ -18,16 +18,20 @@ hero:
 
 features:
   - icon: ⚡
-    title: Lightning Fast
-    details: Our abstraction algorithms make sending and receiving even faster.
+    title: Faster Method Binding
+    details: brings safe, secure data binding.
+    link: /get-started
+  - icon: 🏓
+    title: Promise Driven
+    details: Fully-managed resolve manager brings perfect asynchronus I/O.
+    link: /get-started
+  - icon: ✍
+    title: ESM Literals
+    details: No more postMessage, stay focus on plain JavaScript.
     link: /get-started
   - icon: 🍀
     title: Adaptive Balancing
     details: Avoid residing inactive workers and suppress excessive thread consumption.
-    link: /get-started
-  - icon: ✍
-    title: Inline Everything
-    details: No more worker.js, stay focus on single JavaScript.
     link: /get-started
   - icon: 🗜️
     title: Bundle Friendly
@@ -36,17 +40,5 @@ features:
   - icon: 🌎
     title: Universal Performance
     details: Works from browser to edge runtimes widely with polyfills.
-    link: /get-started
-  - icon: 🏓
-    title: Promise-based
-    details: Fully-managed resolve manager brings perfect asynchronus I/O.
-    link: /get-started
-  - icon: 🔧
-    title: Flexible Design
-    details: Worker with constructor arguments. 
-    link: /get-started
-  - icon: 🚚
-    title: Export Module
-    details: Designed template can be published externally as an ES module.
     link: /get-started
 ---

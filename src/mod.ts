@@ -1,11 +1,11 @@
 type WorkioTransferable = ArrayBuffer | MessagePort | ReadableStream | WritableStream | TransformStream | AudioData | ImageBitmap | VideoFrame | OffscreenCanvas | RTCDataChannel
-type WorkioInstance = { [key: string]: Function }
+type WorkioInstance = { [key: string]: Function; [Symbol.dispose](): void; }
 
 const publishedWorkioInstanceMap = new WeakMap();
 
 export const Workio = Object.assign(
 	
-	async (src: string, base: string) => {
+	async (src: string, base?: string) => {
 
 		const
 			worker = new Worker(import.meta.resolve("./temp.ts"), { type: "module" }),
@@ -50,7 +50,7 @@ export const Workio = Object.assign(
 			resolve(body);
 		});
 
-		const baseObject: { [key: string]: Function; [Symbol.dispose](): void; } | Function = Object.assign(
+		const baseObject: WorkioInstance | Function = Object.assign(
 			isDefault
 				? (...args: any[]) => publishRequest.apply(null, args)
 				: Object.defineProperties({}, Object.assign.apply(
