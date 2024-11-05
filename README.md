@@ -1,4 +1,5 @@
 # [Workio](./book/get-started.md)
+⚡️ Web Worker with I/O ⚡️
 
 ![Static Badge](https://img.shields.io/badge/Chrome-80-gray?logo=google-chrome&labelColor=gray&color=lightgreen)
 ![Static Badge](https://img.shields.io/badge/Edge-80-gray?logo=microsoft-edge&labelColor=gray&color=lightgreen)
@@ -9,6 +10,7 @@
 <!-- ![Static Badge](https://img.shields.io/badge/Node.js-12-gray?logo=nodedotjs&labelColor=gray&color=lightgreen&logoColor=12ef15) -->
 ```typescript
 // module.ts
+// no import required!
 
 export const sum = (a: number, b: number) => a + b;
 ```
@@ -16,7 +18,7 @@ export const sum = (a: number, b: number) => a + b;
 ```typescript
 // main.ts
 
-const { Workio } = await import("workio");
+import { Workio } from "workio";
 
 using instance = await Workio("./module.ts", import.meta.url);
 
@@ -25,7 +27,8 @@ console.log(await instance.sum(1, 2)); // "3"
 // The instance will be terminated when the scope ends!
 ```
 
-Workio is a JavaScript library for building and managing Web Workers.
+Workio is a JavaScript library for building and managing Web Workers.\
+Unlike Comlink, no external module imports are required on the worker side script.
 <details>
 <summary><b>Touch-and-Go:</b> No more worker.js to build additional off-thread operations. offload to comfortable worker threads with single line.</summary>
 <br>
